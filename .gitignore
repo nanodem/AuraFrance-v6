@@ -1,0 +1,9 @@
+node_modules/
+.env
+data/db.json
+uploads/
+pm2.log
+.DS_Store
+npm-debug.log*
+logs/
+coverage/

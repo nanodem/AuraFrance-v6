@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#0a0a1a"/>
+<title>AuraFrance Systems</title>
+<link rel="manifest" href="/manifest.json"/>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+--primary:#f97316;--primary-dark:#ea6c0a;--primary-light:#fda44e;
+--bg:#07070f;--bg2:#0e0e1e;--bg3:#151528;--bg4:#1c1c35;
+--card:#12122a;--card2:#1a1a30;
+--text:#fff;--text2:#b0b0cc;--text3:#6b6b8a;
+--green:#10b981;--red:#ef4444;--blue:#3b82f6;--gold:#f59e0b;
+--border:#2a2a45;--border2:#3a3a55;
+--radius:16px;--radius-sm:10px;--radius-xs:6px;
+--shadow:0 4px 24px rgba(0,0,0,.5);
+--glow:0 0 20px rgba(249,115,22,.3);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;overflow-x:hidden}
+#root{min-height:100%;display:flex;flex-direction:column}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* Prevent DevTools */
+body{-webkit-user-select:none;user-select:text}
+
+/* Animations */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(249,115,22,.3)}50%{box-shadow:0 0 40px rgba(249,115,22,.6)}}
+@keyframes wheelSpin{0%{transform:rotate(0)}100%{transform:rotate(var(--end-angle))}}
+@keyframes successPop{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* Layout */
+.screen{display:none;flex-direction:column;min-height:100vh;animation:fadeIn .3s ease}
+.screen.active{display:flex}
+.page{flex:1;overflow-y:auto;padding:16px;padding-bottom:80px}
+.page.no-nav{padding-bottom:16px}
+
+/* Nav Bar */
+.navbar{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:100;padding:8px 0 max(env(safe-area-inset-bottom),8px)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px;transition:.2s;color:var(--text3)}
+.nav-item.active{color:var(--primary)}
+.nav-icon{font-size:22px}
+.nav-label{font-size:10px;font-weight:600}
+
+/* Header */
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;backdrop-filter:blur(10px)}
+.header-title{font-size:17px;font-weight:700;flex:1}
+.header-back{font-size:22px;cursor:pointer;padding:4px;color:var(--text2)}
+.header-action{font-size:20px;cursor:pointer;padding:4px;color:var(--text2)}
+
+/* Cards */
+.card{background:var(--card);border-radius:var(--radius);padding:20px;border:1px solid var(--border);margin-bottom:12px}
+.card2{background:var(--card2);border-radius:var(--radius-sm);padding:16px;border:1px solid var(--border)}
+
+/* Buttons */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:var(--radius-sm);font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;transition:.2s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;padding:14px 24px;font-size:15px;width:100%;border-radius:12px;box-shadow:var(--glow)}
+.btn-secondary{background:var(--bg4);color:var(--text);padding:12px 20px;font-size:14px;border:1px solid var(--border2)}
+.btn-sm{padding:8px 16px;font-size:13px}
+.btn-danger{background:var(--red);color:#fff;padding:10px 16px;font-size:13px}
+.btn-success{background:var(--green);color:#fff;padding:10px 16px;font-size:13px}
+.btn-icon{background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius-xs);padding:8px 12px;font-size:13px;color:var(--text2)}
+
+/* Form */
+.input{width:100%;background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;color:var(--text);font-size:14px;font-family:'Cairo',sans-serif;outline:none;transition:.2s;text-align:right}
+.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+.input::placeholder{color:var(--text3)}
+.label{font-size:13px;color:var(--text2);margin-bottom:6px;display:block;font-weight:600}
+.field{margin-bottom:16px}
+
+/* Badge */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.badge-green{background:rgba(16,185,129,.15);color:var(--green)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+.badge-yellow{background:rgba(245,158,11,.15);color:var(--gold)}
+.badge-blue{background:rgba(59,130,246,.15);color:var(--blue)}
+.badge-orange{background:rgba(249,115,22,.15);color:var(--primary)}
+
+/* Avatar */
+.avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--border2);flex-shrink:0}
+
+/* Balance card */
+.balance-card{background:linear-gradient(135deg,#1a0a3e,#0f1a3e);border-radius:20px;padding:24px;border:1px solid rgba(249,115,22,.3);position:relative;overflow:hidden;margin-bottom:16px}
+.balance-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 20% 50%,rgba(249,115,22,.08),transparent 60%)}
+.balance-label{font-size:12px;color:var(--text2);margin-bottom:6px}
+.balance-amount{font-size:32px;font-weight:900;color:var(--primary)}
+.balance-usdt{font-size:14px;color:var(--text2);font-weight:600}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center}
+.stat-value{font-size:20px;font-weight:800;color:var(--text)}
+.stat-label{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* List item */
+.list-item{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid var(--border)}
+.list-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.list-content{flex:1;min-width:0}
+.list-title{font-size:14px;font-weight:700;margin-bottom:2px}
+.list-sub{font-size:12px;color:var(--text3)}
+.list-right{text-align:left;flex-shrink:0}
+.list-amount{font-size:14px;font-weight:700}
+.list-date{font-size:11px;color:var(--text3)}
+
+/* Tab system */
+.tabs{display:flex;background:var(--bg3);border-radius:var(--radius-sm);padding:4px;margin-bottom:16px;gap:4px}
+.tab{flex:1;padding:9px;border-radius:8px;border:none;background:transparent;color:var(--text3);font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:.2s}
+.tab.active{background:var(--primary);color:#fff;box-shadow:var(--glow)}
+
+/* Quick amounts */
+.quick-amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.quick-amt{background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius-xs);padding:10px 4px;text-align:center;cursor:pointer;font-size:12px;font-weight:700;color:var(--text2);transition:.2s}
+.quick-amt:hover,.quick-amt.selected{border-color:var(--primary);color:var(--primary);background:rgba(249,115,22,.08)}
+
+/* QR container */
+.qr-container{background:#fff;border-radius:12px;padding:12px;display:inline-flex;align-items:center;justify-content:center;margin:16px auto;display:block;width:fit-content}
+.qr-container img{width:200px;height:200px}
+
+/* Copy box */
+.copy-box{display:flex;align-items:center;background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:12px}
+.copy-text{flex:1;padding:12px 14px;font-size:12px;color:var(--text2);word-break:break-all;font-family:monospace}
+.copy-btn{padding:12px 14px;background:var(--primary);border:none;color:#fff;cursor:pointer;font-size:18px;flex-shrink:0;transition:.2s}
+.copy-btn:active{background:var(--primary-dark)}
+
+/* Alert box */
+.alert{border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:12px;font-size:13px;line-height:1.6}
+.alert-warning{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--gold)}
+.alert-danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red)}
+.alert-success{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:var(--green)}
+.alert-info{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:var(--blue)}
+
+/* Progress */
+.progress-bar{background:var(--bg4);border-radius:20px;height:8px;overflow:hidden;margin:6px 0}
+.progress-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--primary),var(--primary-light));transition:width .5s ease}
+
+/* Spinner */
+.spinner{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto}
+.spinner-sm{width:20px;height:20px;border-width:2px}
+
+/* Success animation */
+.success-circle{width:80px;height:80px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 16px;animation:successPop .5s cubic-bezier(.34,1.56,.64,1)}
+
+/* Network badge */
+.network-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid}
+.network-trc20{border-color:var(--red);color:var(--red);background:rgba(239,68,68,.08)}
+.network-bep20{border-color:var(--gold);color:var(--gold);background:rgba(245,158,11,.08)}
+.network-erc20{border-color:var(--blue);color:var(--blue);background:rgba(59,130,246,.08)}
+
+/* Lucky wheel */
+.wheel-outer{position:relative;width:280px;height:280px;margin:0 auto}
+.wheel-canvas{width:280px;height:280px;border-radius:50%;box-shadow:0 0 30px rgba(249,115,22,.4);border:4px solid var(--primary)}
+.wheel-needle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:20px;height:20px;background:var(--text);border-radius:50%;z-index:10;box-shadow:0 0 10px rgba(0,0,0,.5)}
+.wheel-center{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:28px;z-index:10;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+
+/* Points display */
+.points-badge{background:linear-gradient(135deg,#2d1b5e,#1b2d5e);border:1px solid rgba(249,115,22,.4);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.points-icon{font-size:28px}
+.points-val{font-size:24px;font-weight:900;color:var(--gold)}
+.points-label{font-size:12px;color:var(--text3)}
+
+/* Admin table */
+.table{width:100%;border-collapse:collapse;font-size:12px}
+.table th{background:var(--bg4);padding:10px 8px;color:var(--text2);font-weight:700;text-align:right;white-space:nowrap}
+.table td{padding:10px 8px;border-bottom:1px solid var(--border);color:var(--text)}
+.table tr:hover td{background:rgba(255,255,255,.02)}
+
+/* Deposit step indicator */
+.steps{display:flex;align-items:center;margin-bottom:20px;overflow-x:auto;padding:4px 0}
+.step{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
+.step-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:2px solid var(--border);color:var(--text3);transition:.3s}
+.step.done .step-circle{background:var(--green);border-color:var(--green);color:#fff}
+.step.active .step-circle{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:var(--glow)}
+.step-line{flex:1;height:2px;background:var(--border);min-width:20px;transition:.3s}
+.step-line.done{background:var(--green)}
+.step-label{font-size:9px;color:var(--text3);text-align:center;max-width:50px}
+
+/* Toast */
+.toast-container{position:fixed;top:16px;right:16px;left:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{padding:12px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;animation:slideUp .3s ease;pointer-events:all;max-width:400px;margin:0 auto;display:flex;align-items:center;gap:8px}
+.toast-success{background:var(--green);color:#fff}
+.toast-error{background:var(--red);color:#fff}
+.toast-info{background:var(--blue);color:#fff}
+.toast-warning{background:var(--gold);color:#fff}
+
+/* Login screen */
+.login-bg{background:linear-gradient(180deg,#0a0a1a 0%,#1a0a3e 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;position:relative;overflow:hidden}
+.login-bg::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(249,115,22,.15),transparent);top:-50px;right:-50px}
+.login-bg::after{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.1),transparent);bottom:-50px;left:-50px}
+.logo{text-align:center;margin-bottom:32px;animation:float 3s ease-in-out infinite}
+.logo-icon{font-size:60px;margin-bottom:8px}
+.logo-text{font-size:28px;font-weight:900;background:linear-gradient(135deg,var(--primary),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.logo-sub{font-size:13px;color:var(--text3)}
+
+/* Package cards */
+.pkg-card{border-radius:var(--radius);border:2px solid var(--border);padding:20px;margin-bottom:10px;position:relative;overflow:hidden;cursor:pointer;transition:.2s}
+.pkg-card:hover{border-color:var(--primary);transform:translateY(-2px)}
+.pkg-card.popular{border-color:var(--gold)}
+.pkg-badge{position:absolute;top:10px;left:10px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:var(--gold);color:#000}
+.pkg-name{font-size:18px;font-weight:800;margin-bottom:4px}
+.pkg-price{font-size:24px;font-weight:900;color:var(--primary)}
+.pkg-return{font-size:13px;color:var(--green);margin-top:4px}
+
+/* Overlay */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:flex-end;backdrop-filter:blur(4px)}
+.overlay.open{display:flex}
+.sheet{background:var(--bg2);border-radius:24px 24px 0 0;padding:24px;width:100%;max-height:90vh;overflow-y:auto;animation:slideUp .3s ease}
+.sheet-handle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 20px}
+
+/* Floating action button */
+.fab{position:fixed;bottom:80px;left:16px;width:52px;height:52px;border-radius:50%;background:var(--primary);border:none;font-size:24px;color:#fff;cursor:pointer;box-shadow:var(--glow);z-index:90;transition:.2s;display:flex;align-items:center;justify-content:center}
+.fab:active{transform:scale(.9)}
+
+/* Divider */
+.divider{height:1px;background:var(--border);margin:16px 0}
+
+/* Network selector */
+.network-options{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+.network-opt{padding:12px 8px;border-radius:var(--radius-sm);border:2px solid var(--border);text-align:center;cursor:pointer;transition:.2s}
+.network-opt.selected{border-color:var(--primary);background:rgba(249,115,22,.08)}
+.network-opt .net-icon{font-size:20px;margin-bottom:4px}
+.network-opt .net-name{font-size:12px;font-weight:700}
+.network-opt .net-type{font-size:10px;color:var(--text3)}
+
+/* Profile */
+.profile-header{text-align:center;padding:24px 16px 16px}
+.profile-avatar{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--primary);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:32px;background:var(--bg4)}
+.profile-name{font-size:20px;font-weight:800}
+.profile-id{font-size:12px;color:var(--text3);margin-top:2px;font-family:monospace}
+
+/* Skeleton loading */
+.skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:var(--radius-xs)}
+
+/* Section title */
+.section-title{font-size:16px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--text)}
+
+/* Info row */
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.info-row:last-child{border-bottom:none}
+.info-key{font-size:13px;color:var(--text3)}
+.info-val{font-size:13px;font-weight:700;color:var(--text);word-break:break-all;text-align:left;max-width:60%}
+
+/* Role color */
+.role-admin{color:#ff6b6b}
+.role-supervisor{color:#4ecdc4}
+.role-employee{color:var(--text)}
+
+/* Responsive */
+@media(min-width:480px){
+  .page{max-width:480px;margin:0 auto}
+  .navbar{max-width:480px;left:50%;transform:translateX(-50%)}
+  .header{max-width:480px;left:50%;transform:translateX(-50%)}
+  .toast-container{max-width:480px;left:50%;transform:translateX(-50%);right:auto}
+}
+</style>
+</head>
+<body>
+<!-- unregister old service workers and clear caches to avoid stale resources -->
+<script>
+if('serviceWorker' in navigator){
+  try{ navigator.serviceWorker.getRegistrations().then(r=>r.forEach(reg=>reg.unregister())); }catch(e){}
+  try{ caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))); }catch(e){}
+}
+<!-- prevent right click and devtools shortcuts -->
+document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('keydown',e=>{if(e.keyCode===123||(e.ctrlKey&&e.shiftKey&&['I','J','C'].includes(e.key))||(e.ctrlKey&&e.key==='U'))e.preventDefault();});
+</script>
+
+<div id="root"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/babel-standalone@7/babel.min.js"></script>
+
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback,createContext,useContext}=React;
+const WS_PROTOCOL = (location.protocol === 'https:') ? 'wss' : 'ws';
+
+// ── Toast ──
+function showToast(msg,type='info'){
+  const c=document.getElementById('toastContainer');
+  const el=document.createElement('div');
+  el.className=`toast toast-${type}`;
+  const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+  el.innerHTML=`<span>${icons[type]||''}</span><span>${msg}</span>`;
+  c.appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(-10px)';el.style.transition='.3s';setTimeout(()=>el.remove(),300)},3000);
+}
+
+// ── API ──
+const API_BASE='';
+let _accessToken=localStorage.getItem('accessToken')||'';
+let _refreshToken=localStorage.getItem('refreshToken')||'';
+
+function setTokens(access,refresh){
+  _accessToken=access;_refreshToken=refresh;
+  localStorage.setItem('accessToken',access);
+  if(refresh)localStorage.setItem('refreshToken',refresh);
+}
+function clearTokens(){
+  _accessToken='';_refreshToken='';
+  localStorage.removeItem('accessToken');localStorage.removeItem('refreshToken');
+}
+
+async function apiFetch(path,opts={}){
+  const headers={'Content-Type':'application/json',...(opts.headers||{})};
+  if(_accessToken)headers['Authorization']=`Bearer ${_accessToken}`;
+  const res=await fetch(API_BASE+path,{...opts,headers});
+  if(res.status===401&&_refreshToken){
+    const r=await fetch(API_BASE+'/api/auth/refresh',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refreshToken:_refreshToken})});
+    if(r.ok){
+      const d=await r.json();
+      setTokens(d.accessToken,_refreshToken);
+      headers['Authorization']=`Bearer ${d.accessToken}`;
+      const res2=await fetch(API_BASE+path,{...opts,headers});
+      if(!res2.ok)throw new Error((await res2.json()).error||'Error');
+      return res2.json();
+    } else {clearTokens();window.location.reload();}
+  }
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error||'حدث خطأ');}
+  return res.json();
+}
+
+async function apiPost(path,body){return apiFetch(path,{method:'POST',body:JSON.stringify(body)});}
+async function apiPut(path,body){return apiFetch(path,{method:'PUT',body:JSON.stringify(body)});}
+async function apiGet(path){return apiFetch(path);}
+
+// ── App State ──
+let globalSetScreen;let globalUser;let globalSetUser;
+
+// ── Screens ──
+const SCREENS={
+  LOGIN:'login',EMPLOYEE:'employee',ADMIN:'admin',SUPERVISOR:'supervisor',
+  WALLET:'wallet',DEPOSIT_NETWORK:'depositNetwork',DEPOSIT_AMOUNT:'depositAmount',
+  DEPOSIT_ADDRESS:'depositAddress',DEPOSIT_PENDING:'depositPending',DEPOSIT_SUCCESS:'depositSuccess',
+  WITHDRAW:'withdraw',PACKAGES:'packages',LUCKY:'lucky',PROFILE:'profile',
+  TRANSACTIONS:'transactions',ADMIN_USERS:'adminUsers',ADMIN_SUPERVISORS:'adminSupervisors',
+  ADMIN_DEPOSITS:'adminDeposits',ADMIN_WITHDRAWALS:'adminWithdrawals',ADMIN_SETTINGS:'adminSettings',
+  SUP_EMPLOYEES:'supEmployees',SUP_STATS:'supStats',CHANGE_PASSWORD:'changePassword'
+};
+
+// ── Context ──
+const AppCtx=createContext(null);
+
+function useApp(){return useContext(AppCtx);}
+
+// ────────────────────────────────────────────────────
+// LOGIN SCREEN
+// ────────────────────────────────────────────────────
+function LoginScreen(){
+  const {setScreen,setUser}=useApp();
+  const [tab,setTab]=useState('employee');
+  const [id,setId]=useState('');
+  const [pass,setPass]=useState('');
+  const [loading,setLoading]=useState(false);
+  const [showPass,setShowPass]=useState(false);
+
+  async function doLogin(e){
+    e.preventDefault();
+    if(!id||!pass)return showToast('أدخل جميع البيانات','warning');
+    setLoading(true);
+    try{
+      const role=tab==='admin'?'admin':tab==='supervisor'?'supervisor':'user';
+      const d=await apiPost('/api/auth/login',{identifier:id,password:pass,role});
+      setTokens(d.accessToken,d.refreshToken);
+      setUser(d.user);
+      if(d.user.role==='admin')setScreen(SCREENS.ADMIN);
+      else if(d.user.role==='supervisor'){
+        if(d.user.mustChangePassword){setScreen(SCREENS.CHANGE_PASSWORD);}
+        else setScreen(SCREENS.SUPERVISOR);
+      }
+      else setScreen(SCREENS.EMPLOYEE);
+    }catch(e){showToast(e.message,'error');}
+    setLoading(false);
+  }
+
+  return(
+    <div className="login-bg">
+      <div className="logo">
+        <div className="logo-icon">🇫🇷</div>
+        <div className="logo-text">AuraFrance</div>
+        <div className="logo-sub">منصة الاستثمار الذهبي</div>
+      </div>
+
+      <div style={{width:'100%',maxWidth:380}}>
+        <div className="tabs" style={{marginBottom:20}}>
+          {['employee','supervisor','admin'].map(t=>(
+            <button key={t} className={`tab${tab===t?' active':''}`} onClick={()=>setTab(t)}>
+              {t==='employee'?'👤 موظف':t==='supervisor'?'👑 مشرف':'🛡️ إدمن'}
+            </button>
+          ))}
+        </div>
+
+        <form onSubmit={doLogin}>
+          <div className="field">
+            <label className="label">{tab==='admin'?'معرف الإدمن':tab==='supervisor'?'معرف المشرف':'رقم الهاتف'}</label>
+            <input className="input" value={id} onChange={e=>setId(e.target.value)} placeholder={tab==='admin'?'AURA_FR_ADMIN':tab==='supervisor'?'SUP_001':'05XXXXXXXX'}/>
+          </div>
+          <div className="field">
+            <label className="label">كلمة المرور</label>
+            <div style={{position:'relative'}}>
+              <input className="input" type={showPass?'text':'password'} value={pass} onChange={e=>setPass(e.target.value)} placeholder="••••••••" style={{paddingLeft:44}}/>
+              <button type="button" onClick={()=>setShowPass(!showPass)} style={{position:'absolute',left:12,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',color:'var(--text3)',cursor:'pointer',fontSize:18}}>{showPass?'🙈':'👁️'}</button>
+            </div>
+          </div>
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            {loading?<><span className="spinner spinner-sm"/><span>جاري الدخول...</span></>:'🔐 تسجيل الدخول'}
+          </button>
+        </form>
+
+        {tab==='employee'&&(
+          <div style={{marginTop:16,textAlign:'center'}}>
+            <span style={{color:'var(--text3)',fontSize:13}}>ليس لديك حساب؟ </span>
+            <button onClick={()=>setScreen('register')} style={{background:'none',border:'none',color:'var(--primary)',cursor:'pointer',fontSize:13,fontWeight:700,fontFamily:'Cairo'}}>إنشاء حساب</button>
+          </div>
+        )}
+
+        <div style={{textAlign:'center',marginTop:20}}>
+          <a href="https://t.me/+C0Z9ls7s3DRjOWVi" target="_blank" style={{color:'var(--text3)',fontSize:12,textDecoration:'none'}}>✈️ انضم لمجموعة تيليجرام</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── REGISTER ──
+function RegisterScreen(){
+  const {setScreen,setUser}=useApp();
+  const [name,setName]=useState('');
+  const [phone,setPhone]=useState('');
+  const [pass,setPass]=useState('');
+  const [ref,setRef]=useState('');
+  const [loading,setLoading]=useState(false);
+
+  async function doRegister(e){
+    e.preventDefault();
+    if(!name||!phone||!pass)return showToast('أدخل جميع البيانات','warning');
+    if(pass.length<6)return showToast('كلمة المرور 6 أحرف على الأقل','warning');
+    setLoading(true);
+    try{
+      const d=await apiPost('/api/auth/register',{name,phone,password:pass,referralCode:ref});
+      setTokens(d.accessToken,d.refreshToken);
+      setUser(d.user);
+      setScreen(SCREENS.EMPLOYEE);
+      showToast('مرحباً بك في AuraFrance! 🎉','success');
+    }catch(e){showToast(e.message,'error');}
+    setLoading(false);
+  }
+
+  return(
+    <div className="login-bg">
+      <div className="logo" style={{animation:'none'}}>
+        <div className="logo-icon">🇫🇷</div>
+        <div className="logo-text">إنشاء حساب</div>
+      </div>
+      <div style={{width:'100%',maxWidth:380}}>
+        <form onSubmit={doRegister}>
+          <div className="field"><label className="label">الاسم الكامل</label><input className="input" value={name} onChange={e=>setName(e.target.value)} placeholder="محمد علي"/></div>
+          <div className="field"><label className="label">رقم الهاتف</label><input className="input" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="05XXXXXXXX" type="tel"/></div>
+          <div className="field"><label className="label">كلمة المرور</label><input className="input" type="password" value={pass} onChange={e=>setPass(e.target.value)} placeholder="6 أحرف على الأقل"/></div>
+          <div className="field"><label className="label">كود الإحالة (اختياري)</label><input className="input" value={ref} onChange={e=>setRef(e.target.value)} placeholder="XXXXXXXX"/></div>
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            {loading?<><span className="spinner spinner-sm"/><span>جاري التسجيل...</span></>:'✅ إنشاء الحساب'}
+          </button>
+        </form>
+        <div style={{textAlign:'center',marginTop:16}}>
+          <button onClick={()=>setScreen(SCREENS.LOGIN)} style={{background:'none',border:'none',color:'var(--primary)',cursor:'pointer',fontSize:13,fontWeight:700,fontFamily:'Cairo'}}>← العودة لتسجيل الدخول</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── CHANGE PASSWORD ──
+function ChangePasswordScreen(){
+  const {setScreen,user}=useApp();
+  const [curr,setCurr]=useState('');
+  const [next,setNext]=useState('');
+  const [loading,setLoading]=useState(false);
+
+  async function save(e){
+    e.preventDefault();
+    if(next.length<6)return showToast('كلمة المرور 6 أحرف على الأقل','warning');
+    setLoading(true);
+    try{
+      await apiPut('/api/user/password',{currentPassword:curr,newPassword:next});
+      showToast('تم تغيير كلمة المرور بنجاح','success');
+      if(user.role==='supervisor')setScreen(SCREENS.SUPERVISOR);
+      else setScreen(SCREENS.EMPLOYEE);
+    }catch(e){showToast(e.message,'error');}
+    setLoading(false);
+  }
+
+  return(
+    <div className="screen active" style={{minHeight:'100vh',background:'var(--bg)'}}>
+      <div className="header"><div className="header-title">🔑 تغيير كلمة المرور</div></div>
+      <div className="page no-nav" style={{padding:20,maxWidth:480,margin:'0 auto'}}>
+        <div className="alert alert-info" style={{marginBottom:20}}>🛡️ لحماية خصوصيتك، يجب تغيير كلمة المرور الأولية قبل الدخول.</div>
+        <form onSubmit={save}>
+          {!user?.mustChangePassword&&<div className="field"><label className="label">كلمة المرور الحالية</label><input className="input" type="password" value={curr} onChange={e=>setCurr(e.target.value)}/></div>}
+          <div className="field"><label className="label">كلمة المرور الجديدة</label><input className="input" type="password" value={next} onChange={e=>setNext(e.target.value)} placeholder="6 أحرف على الأقل"/></div>
+          <button type="submit" className="btn btn-primary" disabled={loading}>{loading?'جاري الحفظ...':'💾 حفظ كلمة المرور'}</button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ── BOTTOM NAV ──
+function EmployeeNav({active,setScreen}){
+  const items=[
+    {id:SCREENS.EMPLOYEE,icon:'🏠',label:'الرئيسية'},
+    {id:SCREENS.WALLET,icon:'💰',label:'محفظتي'},
+    {id:SCREENS.PACKAGES,icon:'📦',label:'الباقات'},
+    {id:SCREENS.LUCKY,icon:'🎡',label:'الحظ'},
+    {id:SCREENS.PROFILE,icon:'👤',label:'ملكي'},
+  ];
+  return(
+    <nav className="navbar">
+      {items.map(i=>(
+        <div key={i.id} className={`nav-item${active===i.id?' active':''}`} onClick={()=>setScreen(i.id)}>
+          <div className="nav-icon">{i.icon}</div>
+          <div className="nav-label">{i.label}</div>
+        </div>
+      ))}
+    </nav>
+  );
+}
+
+function AdminNav({active,setScreen}){
+  const items=[
+    {id:SCREENS.ADMIN,icon:'📊',label:'الرئيسية'},
+    {id:SCREENS.ADMIN_USERS,icon:'👥',label:'الموظفون'},
+    {id:SCREENS.ADMIN_DEPOSITS,icon:'⬇️',label:'الإيداعات'},
+    {id:SCREENS.ADMIN_WITHDRAWALS,icon:'⬆️',label:'السحوبات'},
+    {id:SCREENS.ADMIN_SETTINGS,icon:'⚙️',label:'الإعدادات'},
+  ];
+  return(
+    <nav className="navbar">
+      {items.map(i=>(
+        <div key={i.id} className={`nav-item${active===i.id?' active':''}`} onClick={()=>setScreen(i.id)}>
+          <div className="nav-icon">{i.icon}</div>
+          <div className="nav-label">{i.label}</div>
+        </div>
+      ))}
+    </nav>
+  );
+}
+
+function SupervisorNav({active,setScreen}){
+  const items=[
+    {id:SCREENS.SUPERVISOR,icon:'📊',label:'الرئيسية'},
+    {id:SCREENS.SUP_EMPLOYEES,icon:'👥',label:'الفريق'},
+    {id:SCREENS.ADMIN_DEPOSITS,icon:'⬇️',label:'الإيداعات'},
+    {id:SCREENS.ADMIN_WITHDRAWALS,icon:'⬆️',label:'السحوبات'},
+    {id:SCREENS.PROFILE,icon:'👤',label:'حسابي'},
+  ];
+  return(
+    <nav className="navbar">
+      {items.map(i=>(
+        <div key={i.id} className={`nav-item${active===i.id?' active':''}`} onClick={()=>setScreen(i.id)}>
+          <div className="nav-icon">{i.icon}</div>
+          <div className="nav-label">{i.label}</div>
+        </div>
+      ))}
+    </nav>
+  );
+}
+
+// ────────────────────────────────────────────────────
+// EMPLOYEE DASHBOARD
+// ────────────────────────────────────────────────────
+function EmployeeScreen(){
+  const {setScreen,user,setUser}=useApp();
+  const [data,setData]=useState(null);
+  const [txs,setTxs]=useState([]);
+  const [loading,setLoading]=useState(true);
+
+  useEffect(()=>{
+    Promise.all([apiGet('/api/user/me'),apiGet('/api/transactions')]).then(([u,t])=>{
+      setUser(u);setData(u);setTxs(t.slice(0,5));
+    }).catch(()=>{}).finally(()=>setLoading(false));
+  },[]);
+
+  if(loading)return<div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh'}}><div className="spinner"/></div>;
+
+  const multiplier=data?calcMultiplier(data.points):1;
+  const dailyIncome=data?.package?data.package.price*(data.package.dailyReturn/100)*multiplier:0;
+
+  function calcMultiplier(pts){
+    if(pts>=100)return 1;
+    const lost=100-pts;const brackets=Math.floor(lost/5);
+    return Math.max(0,1-brackets*0.1);
+  }
+
+  return(
+    <div className="screen active">
+      <div className="header">
+        <div className="header-title">🇫🇷 AuraFrance</div>
+        <div style={{display:'flex',gap:4}}>
+          <span style={{fontSize:12,color:'var(--text3)',alignSelf:'center'}}>مرحباً، {data?.name}</span>
+          <button className="header-action" onClick={()=>{clearTokens();window.location.reload();}}>🚪</button>
+        </div>
+      </div>
+      <div className="page">
+        <div className="balance-card">
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'start'}}>
+            <div>
+              <div className="balance-label">💰 إجمالي الرصيد</div>
+              <div className="balance-amount">{(data?.balance||0).toFixed(2)}</div>
+              <div className="balance-usdt">USDT</div>
+            </div>
+            <div className="points-badge" style={{flexDirection:'column',minWidth:80}}>
+              <div className="points-icon">⭐</div>
+              <div className="points-val">{data?.points||100}</div>
+              <div className="points-label">نقطة مجد</div>
+            </div>
+          </div>
+          <div className="divider" style={{borderColor:'rgba(255,255,255,.1)',margin:'12px 0'}}/>
+          <div style={{display:'flex',gap:16}}>
+            <button className="btn btn-primary" style={{flex:1,padding:'10px'}} onClick={()=>setScreen(SCREENS.DEPOSIT_NETWORK)}>⬇️ إيداع</button>
+            <button className="btn btn-secondary" style={{flex:1,padding:'10px'}} onClick={()=>setScreen(SCREENS.WITHDRAW)}>⬆️ سحب</button>
+          </div>
+        </div>
+
+        {data?.package?(
+          <div className="card" style={{borderColor:'rgba(249,115,22,.3)'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+              <div><div style={{fontSize:14,fontWeight:800}}>👑 باقة {data.package.name}</div><div style={{fontSize:12,color:'var(--text3)'}}>{data.package.price} USDT</div></div>
+              <div style={{textAlign:'left'}}><div style={{fontSize:16,fontWeight:900,color:'var(--green)'}}>+{dailyIncome.toFixed(2)}</div><div style={{fontSize:11,color:'var(--text3)'}}>USDT/يوم</div></div>
+            </div>
+            {multiplier<1&&<div className="alert alert-warning" style={{padding:'6px 10px',fontSize:11}}>⚠️ عائدك مخفض {((1-multiplier)*100).toFixed(0)}% بسبب النقاط</div>}
+            <div className="progress-bar"><div className="progress-fill" style={{width:`${Math.min(100,((new Date()-new Date(data.package.boughtAt))/(new Date(data.package.expiresAt)-new Date(data.package.boughtAt)))*100)}%`}}/></div>
+            <div style={{fontSize:11,color:'var(--text3)',marginTop:4}}>ينتهي: {new Date(data.package.expiresAt).toLocaleDateString('ar')}</div>
+          </div>
+        ):(
+          <div className="card" style={{textAlign:'center',padding:'24px'}}>
+            <div style={{fontSize:32,marginBottom:8}}>📦</div>
+            <div style={{fontSize:14,fontWeight:700,marginBottom:4}}>ليس لديك باقة نشطة</div>
+            <div style={{fontSize:12,color:'var(--text3)',marginBottom:12}}>اشترِ باقة استثمارية واستثمر أموالك</div>
+            <button className="btn btn-primary" style={{width:'auto',padding:'10px 24px'}} onClick={()=>setScreen(SCREENS.PACKAGES)}>🛍️ عرض الباقات</button>
+          </div>
+        )}
+
+        <div className="stats-row">
+          <div className="stat-card"><div className="stat-value">{data?.withdrawalCount||0}</div><div className="stat-label">عدد السحوبات</div></div>
+          <div className="stat-card"><div className="stat-value">{(data?.totalWithdrawn||0).toFixed(0)}</div><div className="stat-label">إجمالي السحوبات</div></div>
+        </div>
+
+        {txs.length>0&&(
+          <>
+            <div className="section-title">📋 آخر العمليات</div>
+            {txs.map(tx=>(
+              <TxItem key={tx.id} tx={tx}/>
+            ))}
+            <button className="btn btn-secondary" style={{width:'100%'}} onClick={()=>setScreen(SCREENS.TRANSACTIONS)}>عرض كل العمليات</button>
+          </>
+        )}
+
+        <div className="card" style={{textAlign:'center',marginTop:12,padding:'14px'}}>
+          <div style={{fontSize:12,color:'var(--text3)',marginBottom:6}}>كود الإحالة الخاص بك</div>
+          <div style={{display:'flex',alignItems:'center',gap:8,justifyContent:'center'}}>
+            <code style={{fontSize:18,fontWeight:900,color:'var(--primary)',letterSpacing:2}}>{data?.referralCode}</code>
+            <button className="btn-icon btn" onClick={()=>{navigator.clipboard.writeText(data?.referralCode||'');showToast('تم النسخ','success');}}>📋</button>
+          </div>
+        </div>
+      </div>
+      <EmployeeNav active={SCREENS.EMPLOYEE} setScreen={setScreen}/>
+    </div>
+  );
+}
+
+function TxItem({tx}){
+  const icons={deposit:'⬇️',withdrawal:'⬆️',bonus:'🎁',package_buy:'📦',lucky_wheel:'🎡',points_deduct:'⚠️',admin_deposit:'💎',supervisor_cut:'👑'};
+  const colors={deposit:'var(--green)',withdrawal:'var(--red)',bonus:'var(--gold)',admin_deposit:'var(--green)'};
+  const amt=parseFloat(tx.amount||0);
+  return(
+    <div className="list-item">
+      <div className="list-icon" style={{background:'var(--bg4)'}}>{icons[tx.type]||'💱'}</div>
+      <div className="list-content"><div className="list-title">{tx.description}</div><div className="list-sub">{new Date(tx.createdAt).toLocaleString('ar')}</div></div>
+      <div className="list-right"><div className="list-amount" style={{color:amt>=0?'var(--green)':'var(--red)'}}>{amt>=0?'+':''}{amt.toFixed(2)} {tx.type.includes('point')?'نقطة':'USDT'}</div></div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────
+// WALLET SCREEN
+// ────────────────────────────────────────────────────
+function WalletScreen(){
+  const {setScreen,user}=useApp();
+  const [data,setData]=useState(null);
+
+  useEffect(()=>{apiGet('/api/user/me').then(setData).catch(()=>{});},[]);
+
+  return(
+    <div className="screen active">
+      <div className="header"><button className="header-back" onClick={()=>setScreen(SCREENS.EMPLOYEE)}>←</button><div className="header-title">💰 محفظتي</div></div>
+      <div className="page">
+        <div className="balance-card">
+          <div className="balance-label">الرصيد المتاح</div>
+          <div className="balance-amount">{(data?.balance||0).toFixed(6)}</div>
+          <div className="balance-usdt">USDT</div>
+        </div>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:16}}>
+          <button className="btn btn-primary" style={{padding:'16px'}} onClick={()=>setScreen(SCREENS.DEPOSIT_NETWORK)}>
+            <div><div style={{fontSize:24}}>⬇️</div><div>إيداع</div></div>
+          </button>
+          <button className="btn btn-secondary" style={{padding:'16px',borderRadius:12}} onClick={()=>setScreen(SCREENS.WITHDRAW)}>
+            <div><div style={{fontSize:24}}>⬆️</div><div>سحب</div></div>
+          </button>
+        </div>
+        <div className="card">
+          <div className="section-title">📊 ملخص المحفظة</div>
+          <div className="info-row"><div className="info-key">الرصيد الكلي</div><div className="info-val" style={{color:'var(--primary)'}}>{(data?.balance||0).toFixed(2)} USDT</div></div>
+          <div className="info-row"><div className="info-key">إجمالي الإيداعات</div><div className="info-val" style={{color:'var(--green)'}}>+ عمليات متعددة</div></div>
+          <div className="info-row"><div className="info-key">إجمالي المسحوبات</div><div className="info-val" style={{color:'var(--red)'}}>{(data?.totalWithdrawn||0).toFixed(2)} USDT</div></div>
+          <div className="info-row"><div className="info-key">عدد السحوبات</div><div className="info-val">{data?.withdrawalCount||0}</div></div>
+        </div>
+        <button className="btn btn-secondary" style={{width:'100%'}} onClick={()=>setScreen(SCREENS.TRANSACTIONS)}>📋 سجل العمليات الكامل</button>
+      </div>
+      <EmployeeNav active={SCREENS.WALLET} setScreen={setScreen}/>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────
+// DEPOSIT FLOW
+// ────────────────────────────────────────────────────
+let depositState={};
+
+function DepositNetworkScreen(){
+  const {setScreen}=useApp();
+  const [sel,setSel]=useState('TRC20');
+  const nets=[
+    {id:'TRC20',icon:'🔴',name:'TRC20',full:'Tron Network',fee:'1 USDT',time:'1-3 دقائق'},
+    {id:'BEP20',icon:'🟡',name:'BEP20',full:'BSC Network',fee:'0.5 USDT',time:'3-5 دقائق'},
+    {id:'ERC20',icon:'🔵',name:'ERC20',full:'Ethereum',fee:'5-15 USDT',time:'10-20 دقائق'},
+  ];
+
+  return(
+    <div className="screen active">
+      <div className="header"><button className="header-back" onClick={()=>setScreen(SCREENS.WALLET)}>←</button><div className="header-title">⬇️ إيداع USDT</div></div>
+      <div className="page no-nav" style={{maxWidth:480,margin:'0 auto'}}>
+        <DepositSteps step={1}/>
+        <div className="section-title">🌐 اختر الشبكة</div>
+        <div className="alert alert-warning">⚠️ تأكد من اختيار الشبكة الصحيحة وإلا قد تفقد أموالك!</div>
+        {nets.map(n=>(
+          <div key={n.id} className="list-item" style={{cursor:'pointer',border:`2px solid ${sel===n.id?'var(--primary)':'var(--border)'}`,background:sel===n.id?'rgba(249,115,22,.05)':'var(--card)'}} onClick={()=>setSel(n.id)}>
+            <div className="list-icon" style={{background:'var(--bg4)',fontSize:24}}>{n.icon}</div>
+            <div className="list-content"><div className="list-title">{n.name} — {n.full}</div><div className="list-sub">رسوم: {n.fee} · الوقت: {n.time}</div></div>
+            <div>{sel===n.id?'✅':''}</div>
+          </div>
+        ))}
+        <button className="btn btn-primary" style={{marginTop:12}} onClick={()=>{depositState.network=sel;setScreen(SCREENS.DEPOSIT_AMOUNT);}}>التالي ←</button>
+      </div>
+    </div>
+  );
+}
+
+function DepositAmountScreen(){
+  const {setScreen}=useApp();
+  const [amount,setAmount]=useState('');
+  const [loading,setLoading]=useState(false);
+  const presets=[500,1500,2600,5000,10000];
+
+  async function proceed(){
+    const amt=parseFloat(amount);
+    if(!amt||amt<10)return showToast('الحد الأدنى 10 USDT','warning');
+    if(amt>50000)return showToast('الحد الأقصى 50,000 USDT','warning');
+    setLoading(true);
+    try{
+      const d=await apiPost('/api/deposit/create',{network:depositState.network||'TRC20',amount:amt});
+      depositState={...depositState,...d};
+      setScreen(SCREENS.DEPOSIT_ADDRESS);
+    }catch(e){showToast(e.message,'error');}
+    setLoading(false);
+  }
+
+  return(
+    <div className="screen active">
+      <div className="header"><button className="header-back" onClick={()=>setScreen(SCREENS.DEPOSIT_NETWORK)}>←</button><div className="header-title">💵 المبلغ</div></div>
+      <div className="page no-nav" style={{maxWidth:480,margin:'0 auto'}}>
+        <DepositSteps step={2}/>
+        <div className="section-title">💰 حدد المبلغ</div>
+        <div className="field">
+          <label className="label">المبلغ (USDT) — الحد الأدنى 10، الأقصى 50,000</label>
+          <input className="input" type="number" value={amount} onChange={e=>setAmount(e.target.value)} placeholder="أدخل المبلغ" min="10" max="50000" style={{fontSize:20,fontWeight:700,textAlign:'center'}}/>
+        </div>
+        <div className="quick-amounts">
+          {presets.map(p=>(
+            <div key={p} className={`quick-amt${parseFloat(amount)===p?' selected':''}`} onClick={()=>setAmount(String(p))}>{p.toLocaleString()}</div>
+          ))}
+          <div className={`quick-amt${!presets.includes(parseFloat(amount))&&amount?' selected':''}`} onClick={()=>setAmount('')}>✏️ مخصص</div>
+        </div>
+        {amount&&parseFloat(amount)>=10&&(
+          <div className="card2" style={{marginBottom:12}}>
+            <div className="info-row"><div className="info-key">المبلغ المطلوب</div><div className="info-val">{parseFloat(amount).toFixed(2)} USDT</div></div>
+            <div className="info-row"><div className="info-key">الشبكة</div><div className="info-val">{depositState.network}</div></div>
+            <div className="info-row"><div className="info-key">ستصل خلال</div><div className="info-val" style={{color:'var(--green)'}}>1-3 دقائق</div></div>
+          </div>
+        )}
+        <button className="btn btn-primary" onClick={proceed} disabled={loading}>{loading?'جاري الإنشاء...':'⬇️ إنشاء عنوان الإيداع'}</button>
+      </div>
+    </div>
+  );
+}
+
+function DepositAddressScreen(){
+  const {setScreen}=useApp();
+  const [txid,setTxid]=useState('');
+  const [sentAmount,setSentAmount]=useState(depositState.amount||'');
+  const [loading,setLoading]=useState(false);
+  const address=depositState.wallet_address||'';
+
+  function copyAddress(){navigator.clipboard.writeText(address);showToast('تم نسخ عنوان المحفظة','success');}
+
+  async function confirm(){
+    if(!txid)return showToast('أدخل رقم العملية (TXID)','warning');
+    setLoading(true);
+    try{
+      const fd=new FormData();
+      fd.append('deposit_id',depositState.deposit_id);
+      fd.append('txid',txid);
+      fd.append('amount',sentAmount||depositState.amount);
+      await fetch('/api/deposit/submit',{method:'POST',headers:{'Authorization':`Bearer ${_accessToken}`},body:fd});
+      setScreen(SCREENS.DEPOSIT_PENDING);
+    }catch(e){showToast(e.message||'خطأ','error');}
+    setLoading(false);
+  }
+
+  const timeLeft=depositState.expires_at?Math.max(0,Math.floor((new Date(depositState.expires_at)-Date.now())/60000)):30;
+
+  return(
+    <div className="screen active">
+      <div className="header"><button className="header-back" onClick={()=>setScreen(SCREENS.DEPOSIT_AMOUNT)}>←</button><div className="header-title">إيداع USDT — {depositState.network}</div></div>
+      <div className="page no-nav" style={{maxWidth:480,margin:'0 auto'}}>
+        <DepositSteps step={3}/>
+
+        <div className="alert alert-warning" style={{display:'flex',alignItems:'center',gap:8}}>
+          <span>⏱️</span><span>صلاحية العنوان: {timeLeft} دقيقة</span>
+        </div>
+
+        {depositState.qr_url&&(
+          <div style={{textAlign:'center',marginBottom:16}}>
+            <div className="qr-container"><img src={depositState.qr_url} alt="QR" style={{width:200,height:200}}/></div>
+          </div>
+        )}
+
+        <div className="label">عنوان المحفظة ({depositState.network})</div>
+        <div className="copy-box">
+          <div className="copy-text">{address}</div>
+          <button className="copy-btn" onClick={copyAddress}>📋</button>
+        </div>
+
+        <div className="alert alert-danger">
+          <div style={{fontWeight:700,marginBottom:4}}>⚠️ تنبيهات مهمة</div>
+          <div>• أرسل USDT فقط عبر شبكة {depositState.network}</div>
+          <div>• الحد الأدنى {depositState.amount} USDT</div>
+          <div>• سيضاف الرصيد تلقائياً خلال 1-3 دقائق</div>
+          <div>• أي مبلغ أقل من 10 USDT لن يُضاف</div>
+        </div>
+
+        <div className="field">
+          <label className="label">رقم العملية (TXID / Hash)</label>
+          <input className="input" value={txid} onChange={e=>setTxid(e.target.value)} placeholder="أدخل TXID بعد الإرسال"/>
+        </div>
+        <div className="field">
+          <label className="label">المبلغ المرسل (USDT)</label>
+          <input className="input" type="number" value={sentAmount} onChange={e=>setSentAmount(e.target.value)} placeholder={depositState.amount}/>
+        </div>
+
+        <button className="btn btn-primary" onClick={confirm} disabled={loading} style={{marginTop:8}}>
+          {loading?'جاري التأكيد...':'✓ تأكيد الإيداع'}
+        </button>
+        <div style={{display:'flex',gap:8,marginTop:8}}>
+          <button className="btn btn-secondary" style={{flex:1}} onClick={()=>{/* save image */showToast('يمكنك تصوير الشاشة','info');}}>💾 حفظ كصورة</button>
+          <button className="btn btn-secondary" style={{flex:1}} onClick={()=>{if(navigator.share)navigator.share({title:'عنوان إيداع AuraFrance',text:address}).catch(()=>{});else navigator.clipboard.writeText(address).then(()=>showToast('تم النسخ','success'));}}>📤 مشاركة</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DepositPendingScreen(){
+  const {setScreen}=useApp();
+  const [status,setStatus]=useState('under_review');
+  const [confs,setConfs]=useState(0);
+  const wsRef=useRef(null);
+
+  useEffect(()=>{
+    if(!depositState.deposit_id)return;
+    const ws=new WebSocket(`${WS_PROTOCOL}://${location.host}/ws/deposit/${depositState.deposit_id}`);
+    wsRef.current=ws;
+    ws.onmessage=e=>{
+      const d=JSON.parse(e.data);
+      if(d.status)setStatus(d.status);
+      if(d.confirmations!==undefined)setConfs(d.confirmations);
+      if(d.status==='confirmed'){ws.close();setTimeout(()=>setScreen(SCREENS.DEPOSIT_SUCCESS),500);}
+    };
+    // Poll fallback
+    const poll=setInterval(async()=>{
+      try{const d=await apiGet(`/api/deposit/status/${depositState.deposit_id}`);
+        setStatus(d.status);setConfs(d.confirmations||0);
+        if(d.status==='confirmed'){clearInterval(poll);setScreen(SCREENS.DEPOSIT_SUCCESS);}
+        if(d.status==='failed'){clearInterval(poll);}
+      }catch(e){}
+    },5000);
+    return()=>{ws.close();clearInterval(poll);};
+  },[]);
+
+  return(
+    <div className="screen active">
+      <div className="header"><div className="header-title">⏳ جاري التحقق</div></div>
+      <div className="page no-nav" style={{maxWidth:480,margin:'0 auto',textAlign:'center',paddingTop:40}}>
+        <DepositSteps step={4}/>
+
+        {status==='failed'?(
+          <div><div style={{fontSize:64}}>❌</div><div style={{fontSize:20,fontWeight:800,color:'var(--red)',marginTop:16}}>فشل التحقق</div><div style={{fontSize:13,color:'var(--text3)',marginTop:8}}>تواصل مع الدعم الفني</div></div>
+        ):(
+          <>
+            <div className="spinner" style={{margin:'0 auto 20px'}}/>
+            <div style={{fontSize:18,fontWeight:800,marginBottom:4}}>جاري التحقق من العملية...</div>
+            <div style={{fontSize:13,color:'var(--text3)',marginBottom:20}}>الوقت المتوقع: 1-3 دقائق</div>
+          </>
+        )}
+
+        <div className="card" style={{textAlign:'right',maxWidth:380,margin:'0 auto 20px'}}>
+          <div className="info-row"><div className="info-key">TXID</div><div className="info-val" style={{fontSize:11,maxWidth:'55%',overflow:'hidden',textOverflow:'ellipsis'}}>{depositState.txid||'—'}</div></div>
+          <div className="info-row"><div className="info-key">المبلغ</div><div className="info-val">{depositState.amount} USDT</div></div>
+          <div className="info-row"><div className="info-key">الشبكة</div><div className="info-val">{depositState.network}</div></div>
+          <div className="info-row"><div className="info-key">الحالة</div><div className="info-val"><span className="badge badge-yellow">🟡 قيد المراجعة</span></div></div>
+          <div className="info-row">
+            <div className="info-key">التأكيدات</div>
+            <div className="info-val">{confs}/19</div>
+          </div>
+          <div className="progress-bar" style={{margin:'8px 0 0'}}><div className="progress-fill" style={{width:`${(confs/19)*100}%`}}/></div>
+        </div>
+
+        <div style={{display:'flex',gap:8,justifyContent:'center',flexWrap:'wrap'}}>
+          <a href={`https://tronscan.org/#/transaction/${depositState.txid}`} target="_blank" className="btn btn-secondary" style={{textDecoration:'none',padding:'10px 16px',fontSize:12}}>📋 عرض على Tronscan</a>
+          <button className="btn btn-secondary" onClick={()=>setScreen(SCREENS.EMPLOYEE)}>🏠 العودة للرئيسية</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DepositSuccessScreen(){
+  const {setScreen,setUser}=useApp();
+
+  useEffect(()=>{apiGet('/api/user/me').then(setUser).catch(()=>{});},[]);
+
+  return(
+    <div className="screen active">
+      <div className="page no-nav" style={{maxWidth:480,margin:'0 auto',textAlign:'center',paddingTop:60}}>
+        <div className="success-circle">✅</div>
+        <div style={{fontSize:24,fontWeight:900,marginBottom:4}}>تم الإيداع بنجاح! 🎉</div>
+        <div style={{fontSize:14,color:'var(--text3)',marginBottom:24}}>تم إضافة الرصيد إلى محفظتك</div>
+
+        <div className="card" style={{textAlign:'right',maxWidth:360,margin:'0 auto 24px'}}>
+          <div className="info-row"><div className="info-key">المبلغ المضاف</div><div className="info-val" style={{color:'var(--green)',fontSize:20,fontWeight:900}}>+{(depositState.amount*0.85).toFixed(2)} USDT</div></div>
+          <div className="info-row"><div className="info-key">الشبكة</div><div className="info-val">{depositState.network}</div></div>
+          <div className="info-row"><div className="info-key">TXID</div><div className="info-val" style={{fontSize:11}}>{depositState.txid||'—'}</div></div>
+          <div className="info-row"><div className="info-key">التاريخ</div><div className="info-val">{new Date().toLocaleString('ar')}</div></div>
+        </div>
+
+        <button className="btn btn-primary" style={{marginBottom:10}} onClick={()=>{setScreen(SCREENS.PACKAGES);}}>👑 شراء باقة VIP الآن</button>
+        <button className="btn btn-secondary" onClick={()=>setScreen(SCREENS.EMPLOYEE)}>🏠 العودة لـ"ملكي"</button>
+      </div>
+    </div>
+  );
+}
+
+function DepositSteps({step}){
+  const steps=['الشبكة','المبلغ','الإيداع','التأكيد','النجاح'];
+  return(
+    <div className="steps">
+      {steps.map((s,i)=>(
+        <React.Fragment key={i}>
+          <div className={`step${i+1<step?' done':i+1===step?' active':''}`}>
+            <div className="step-circle">{i+1<step?'✓':i+1}</div>
+            <div className="step-label">{s}</div>
+          </div>
+          {i<steps.length-1&&<div className={`step-line${i+1<step?' done':''}`}/>}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────
+// WITHDRAW SCREEN
+// ────────────────────────────────────────────────────
+function WithdrawScreen(){
+  const {setScreen,user}=useApp();
+  const [network,setNetwork]=useState('TRC20');
+  const [wallet,setWallet]=useState('');
+  const [amount,setAmount]=useState('');
+  const [loading,setLoading]=useState(false);
+  const [balance,setBalance]=useState(0);
+  const [step,setStep]=useState(1);
+  const [otpCode,setOtpCode]=useState('');
+  const [otpSent,setOtpSent]=useState(false);
+
+  useEffect(()=>{
+    apiGet('/api/user/me').then(d=>setBalance(d.balance||0)).catch(()=>{});
+  },[]);
+
+  async function sendOTP(){
+    try{
+      await apiPost('/api/auth/otp/send',{userId:user?.id,purpose:'withdraw'});
+      setOtpSent(true);showToast('تم إرسال كود OTP','success');
+    }catch(e){showToast(e.message,'error');}
+  }
+
+  async function doWithdraw(){
+    const amt=parseFloat(amount);
+    if(!amt||amt<20)return showToast('الحد الأدنى 20 USDT','warning');
+    if(amt>balance)return showToast('رصيد غير كافٍ','warning');
+    if(!wallet)return showToast('أدخل عنوان المحفظة','warning');
+    if(amt>=500&&!otpCode)return showToast('أدخل كود OTP للمبالغ الكبيرة','warning');
+    setLoading(true);
+    try{
+      const d=await apiPost('/api/withdraw/request',{amount:amt,network,walletAddress:wallet,otpCode:otpCode||undefined});
+      showToast(`✅ طلب السحب مُقدَّم — المعالجة خلال ${d.withdrawal.delayHours} ساعة`,'success');
+      setStep(3);
+    }catch(e){showToast(e.message,'error');}
+    setLoading(false);
+  }
+
+  if(step===3)return(
+    <div className="screen active">
+      <div className="header"><div className="header-title">✅ طلب السحب</div></div>
+      <div className="page no-nav" style={{textAlign:'center',paddingTop:40,maxWidth:480,margin:'0 auto'}}>
+        <div className="success-circle">✅</div>
+        <div style={{fontSize:20,fontWeight:900,marginBottom:8}}>تم تقديم طلب السحب</div>
+        <div className="card" style={{textAlign:'right',maxWidth:360,margin:'0 auto 20px'}}>
+          <div className="info-row"><div className="info-key">المبلغ</div><div className="info-val">{amount} USDT</div></div>
+          <div className="info-row"><div className="info-key">الشبكة</div><div className="info-val">{network}</div></div>
+          <div className="info-row"><div className="info-key">الحالة</div><div className="info-val"><span className="badge badge-yellow">قيد المعالجة</span></div></div>
+          <div className="info-row"><div className="info-key">المدة المتوقعة</div><div className="info-val">24-72 ساعة</div></div>
+        </div>
+        <button className="btn btn-primary" onClick={()=>setScreen(SCREENS.EMPLOYEE)}>🏠 العودة للرئيسية</button>
+      </div>
+    </div>
+  );
+
+  return(
+    <div className="screen active">
+      <div className="header"><button className="header-back" onClick={()=>setScreen(SCREENS.WALLET)}>←</button><div className="header-title">⬆️ سحب USDT</div></div>
+      <div className="page no-nav" style={{maxWidth:480,margin:'0 auto'}}>
+        <div className="balance-card" style={{marginBottom:16}}>
+          <div className="balance-label">الرصيد المتاح</div>
+          <div className="balance-amount">{balance.toFixed(2)}</div>
+          <div className="balance-usdt">USDT</div>
+        </div>
+
+        <div className="field">
+          <label className="label">الشبكة</label>
+          <div className="network-options">
+            {['TRC20','BEP20','ERC20'].map(n=>(
+              <div key={n} className={`network-opt${network===n?' selected':''}`} onClick={()=>setNetwork(n)}>
+                <div className="net-icon">{n==='TRC20'?'🔴':n==='BEP20'?'🟡':'🔵'}</div>
+                <div className="net-name">{n}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="field">
+          <label className="label">عنوان محفظتك ({network})</label>
+          <input className="input" value={wallet} onChange={e=>setWallet(e.target.value)} placeholder="أدخل عنوان المحفظة"/>
+        </div>
+
+        <div className="field">
+          <label className="label">المبلغ (USDT) — الحد الأدنى 20</label>
+          <input className="input" type="number" value={amount} onChange={e=>setAmount(e.target.value)} placeholder="20"/>
+          <div style={{display:'flex',justifyContent:'space-between',marginTop:4}}>
+            <span style={{fontSize:11,color:'var(--text3)'}}>متاح: {balance.toFixed(2)} USDT</span>
+            <button style={{background:'none',border:'none',color:'var(--primary)',fontSize:11,cursor:'pointer',fontFamily:'Cairo',fontWeight:700}} onClick={()=>setAmount(String(Math.floor(balance)))}>أقصى مبلغ</button>
+          </div>
+        </div>
+
+        {parseFloat(amount)>=500&&(
+          <div className="field">
+            <label className="label">كود OTP (مطلوب للمبالغ ≥ 500 USDT)</label>
+            <div style={{display:'flex',gap:8}}>
+              <input className="input" value={otpCode} onChange={e=>setOtpCode(e.target.value)} placeholder="000000" style={{flex:1}}/>
+              <button className="btn btn-secondary btn-sm" onClick={sendOTP}>{otpSent?'إعادة إرسال':'إرسال OTP'}</button>
+            </div>
+          </div>
+        )}
+
+        {parseFloat(amount)>=20&&parseFloat(amount)<=balance&&(
+          <div className="card2" style={{marginBottom:12}}>
+            <div className="info-row"><div className="info-key">سيصلك</div><div className="info-val" style={{color:'var(--green)'}}>{(parseFloat(amount)*0.82).toFixed(2)} USDT</div></div>
+            <div className="info-row"><div className="info-key">الرسوم</div><div className="info-val" style={{color:'var(--red)'}}>~18%</div></div>
+            <div className="info-row"><div className="info-key">مدة الوصول</div><div className="info-val">24-72 ساعة</div></div>
+          </div>
+        )}
+
+        <button className="btn btn-primary" onClick={doWithdraw} disabled={loading}>{loading?'جاري الإرسال...':'⬆️ تقديم طلب السحب'}</button>
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────
+// PACKAGES SCREEN
+// ────────────────────────────────────────────────────
+function PackagesScreen(){
+  const {setScreen,user}=useApp();
+  const [pkgs,setPkgs]=useState([]);
+  const [balance,setBalance]=useState(0);
+  const [loading,setLoading]=useState(false);
+  const [buying,setBuying]=useState(null);
+
+  useEffect(()=>{
+    Promise.all([apiGet('/api/packages'),apiGet('/api/user/me')]).then(([p,u])=>{setPkgs(p);setBalance(u.balance||0);}).catch(()=>{});
+  },[]);
+
+  async function buy(pkg){
+    if(balance<pkg.price)return showToast(`رصيد غير كافٍ — تحتاج ${pkg.price} USDT`,'error');
+    setBuying(pkg.id);
+    try{
+      await apiPost('/api/packages/buy',{packageId:pkg.id});
+      showToast(`✅ تم شراء باقة ${pkg.name} — +2 نقطة مجد`,'success');
+      setScreen(SCREENS.EMPLOYEE);
+    }catch(e){showToast(e.message,'error');}
+    setBuying(null);
+  }
+
+  const colors={starter:'#6b7280',silver:'#94a3b8',gold:'#f59e0b',platinum:'#e2e8f0',diamond:'#06b6d4',vip:'#f97316'};
+
+  return(
+    <div className="screen active">
+      <div className="header"><div className="header-title">📦 الباقات الاستثمارية</div></div>
+      <div className="page">
+        <div className="alert alert-info" style={{marginBottom:16}}>💎 رصيدك الحالي: <strong>{balance.toFixed(2)} USDT</strong></div>
+        {pkgs.map(pkg=>(
+          <div key={pkg.id} className="pkg-card" style={{borderColor:colors[pkg.id]||'var(--border)',background:`linear-gradient(135deg,var(--card),${colors[pkg.id]}11)`}}>
+            {pkg.id==='vip'&&<div className="pkg-badge">🔥 الأفضل</div>}
+            {pkg.id==='gold'&&<div className="pkg-badge" style={{background:'var(--primary)'}}>⭐ شعبي</div>}
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'start'}}>
+              <div>
+                <div className="pkg-name" style={{color:colors[pkg.id]||'var(--text)'}}>{pkg.name}</div>
+                <div className="pkg-price">{pkg.price.toLocaleString()} USDT</div>
+                <div className="pkg-return">📈 {pkg.dailyReturn}% يومياً لمدة {pkg.duration} يوم</div>
+              </div>
+              <div style={{textAlign:'left'}}>
+                <div style={{fontSize:22,fontWeight:900,color:'var(--green)'}}>+{(pkg.price*pkg.dailyReturn/100*pkg.duration).toFixed(0)}</div>
+                <div style={{fontSize:11,color:'var(--text3)'}}>USDT إجمالي</div>
+              </div>
+            </div>
+            <button className="btn btn-primary" style={{marginTop:12,padding:'10px',opacity: buying===pkg.id ? 0.7 : 1}} onClick={()=>buy(pkg)} disabled={!!buying}>
+              {buying===pkg.id?'جاري الشراء...':balance>=pkg.price?'🛍️ شراء الآن':'💳 أودع أولاً'}
+            </button>
+          </div>
+        ))}
+      </div>
+      <EmployeeNav active={SCREENS.PACKAGES} setScreen={setScreen}/>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────
+// LUCKY WHEEL
+// ────────────────────────────────────────────────────
+function LuckyWheelScreen(){
+  const {setScreen,user}=useApp();
+  const canvasRef=useRef(null);
+  const [spinning,setSpinning]=useState(false);
+  const [result,setResult]=useState(null);
+  const [angle,setAngle]=useState(0);
+
+  const segments=[
+    {label:'5 USDT',color:'#ef4444'},{label:'حظ أوفر',color:'#374151'},
+    {label:'10 USDT',color:'#f97316'},{label:'حظ أوفر',color:'#374151'},
+    {label:'50 USDT',color:'#f59e0b'},{label:'حظ أوفر',color:'#374151'},
+    {label:'100 USDT',color:'#10b981'},{label:'حظ أوفر',color:'#374151'}
+  ];
+
+  useEffect(()=>{drawWheel(angle);},[angle]);
+
+  function drawWheel(rotAngle){
+    const canvas=canvasRef.current;if(!canvas)return;
+    const ctx=canvas.getContext('2d');
+    const cx=140,cy=140,r=130;
+    const arc=2*Math.PI/segments.length;
+    ctx.clearRect(0,0,280,280);
+    segments.forEach((seg,i)=>{
+      ctx.beginPath();ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r,rotAngle+i*arc,rotAngle+(i+1)*arc);
+      ctx.fillStyle=seg.color;ctx.fill();
+      ctx.strokeStyle='#0a0a1a';ctx.lineWidth=2;ctx.stroke();
+      ctx.save();ctx.translate(cx,cy);ctx.rotate(rotAngle+(i+0.5)*arc);
+      ctx.textAlign='right';ctx.fillStyle='#fff';ctx.font='bold 13px Cairo';
+      ctx.fillText(seg.label,r-10,6);ctx.restore();
+    });
+    // center
+    ctx.beginPath();ctx.arc(cx,cy,20,0,2*Math.PI);ctx.fillStyle='#f97316';ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 14px Cairo';ctx.textAlign='center';ctx.fillText('GO',cx,cy+5);
+  }
+
+  async function spin(){
+    if(spinning)return;
+    setResult(null);setSpinning(true);
+    try{
+      const d=await apiPost('/api/lucky-wheel/spin',{});
+      const targetIdx=d.spinIndex;
+      const arc=2*Math.PI/segments.length;
+      const targetAngle=-(targetIdx*arc+arc/2)+(Math.PI/2);
+      const totalAngle=targetAngle+(Math.PI*2*10);
+      let current=0;const start=Date.now();const duration=4000;
+      function animate(){
+        const elapsed=Date.now()-start;const p=Math.min(1,elapsed/duration);
+        const eased=1-Math.pow(1-p,4);
+        const cur=eased*totalAngle;
+        setAngle(cur);drawWheel(cur);
+        if(p<1)requestAnimationFrame(animate);
+        else{setResult(d);setSpinning(false);}
+      }
+      animate();
+    }catch(e){showToast(e.message,'error');setSpinning(false);}
+  }
+
+  return(
+    <div className="screen active">
+      <div className="header"><div className="header-title">🎡 عجلة الحظ</div></div>
+      <div className="page">
+        <div className="alert alert-info" style={{marginBottom:16,textAlign:'center'}}>🎯 يمكنك الدوران مرة واحدة يومياً</div>
+
+        <div className="wheel-outer" style={{marginBottom:20}}>
+          <canvas ref={canvasRef} width={280} height={280} className="wheel-canvas"/>
+          <div className="wheel-center">⬇️</div>
+        </div>
+
+        <button className="btn btn-primary" onClick={spin} disabled={spinning} style={{marginBottom:16,animation:spinning?'none':'glow 2s infinite'}}>
+          {spinning?<><span className="spinner spinner-sm"/><span>جاري الدوران...</span></>:'🎡 دوّر العجلة'}
+        </button>
+
+        {result&&(
+          <div className={`card ${result.isWinner?'':'card2'}`} style={{textAlign:'center',animation:'successPop .4s cubic-bezier(.34,1.56,.64,1)'}}>
+            {result.isWinner?(
+              <>
+                <div style={{fontSize:40,marginBottom:8}}>🎉</div>
+                <div style={{fontSize:20,fontWeight:800,color:'var(--gold)'}}>مبروك! فزت بـ {result.prize?.label}</div>
+                <div style={{fontSize:13,color:'var(--text3)',marginTop:4}}>تم إضافة الجائزة لرصيدك</div>
+              </>
+            ):(
+              <>
+                <div style={{fontSize:40,marginBottom:8}}>😔</div>
+                <div style={{fontSize:16,fontWeight:700}}>حظ أوفر في المرة القادمة!</div>
+                <div style={{fontSize:12,color:'var(--text3)',marginTop:4}}>حاول مجدداً غداً</div>
+              </>
+            )}
+          </div>
+        )}
+
+        <div className="card2" style={{marginTop:12}}>
+          <div className="section-title">🏆 الجوائز المتاحة</div>
+          {[{l:'5 USDT',c:'var(--red)'},{l:'10 USDT',c:'var(--primary)'},{l:'50 USDT',c:'var(--gold)'},{l:'100 USDT',c:'var(--green)'},{l:'500 USDT',c:'var(--blue)'}].map(p=>(
+            <div key={p.l} className="info-row"><div className="info-key">{p.l}</div><div className="info-val" style={{color:p.c}}>🎁 جائزة نقدية</div></div>
+          ))}
+        </div>
+      </div>
+      <EmployeeNav active={SCREENS.LUCKY} setScreen={setScreen}/>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────
+// PROFILE SCREEN
+// ────────────────────────────────────────────────────
+function ProfileScreen(){
+  const {setScreen,user,setUser}=useApp();
+  const [data,setData]=useState(null);
+  const fileRef=useRef(null);
+
+  useEffect(()=>{apiGet('/api/user/me').then(d=>{setData(d);setUser(d);}).catch(()=>{});},[]);
+
+  async function uploadAvatar(e){
+    const file=e.target.files[0];if(!file)return;
+    const fd=new FormData();fd.append('avatar',file);
+    try{
+      const r=await fetch('/api/user/avatar',{method:'POST',headers:{'Authorization':`Bearer ${_accessToken}`},body:fd});
+      const d=await r.json();
+      setData(prev=>({...prev,avatar:d.url}));
+      showToast('تم تحديث الصورة','success');
+    }catch{showToast('فشل رفع الصورة','error');}
+  }
+
+  function logout(){clearTokens();setUser(null);setScreen(SCREENS.LOGIN);}
+
+  const nav=data?.role==='supervisor'?SupervisorNav:EmployeeNav;
+  const homeScreen=data?.role==='supervisor'?SCREENS.SUPERVISOR:SCREENS.EMPLOYEE;
+
+  return(
+    <div className="screen active">
+      <div className="header"><div className="header-title">👤 الملف الشخصي</div></div>
+      <div className="page">
+        <div className="profile-header">
+          <div className="profile-avatar" style={{cursor:'pointer'}} onClick={()=>fileRef.current?.click()}>
+            {data?.avatar?<img src={data.avatar} alt="" style={{width:'100%',height:'100%',borderRadius:'50%',objectFit:'cover'}}/>:'👤'}
+            <div style={{position:'absolute',bottom:0,right:0,background:'var(--primary)',borderRadius:'50%',width:20,height:20,fontSize:12,display:'flex',alignItems:'center',justifyContent:'center'}}>✏️</div>
+          </div>
+          <input ref={fileRef} type="file" accept="image/*" style={{display:'none'}} onChange={uploadAvatar}/>
+          <div className="profile-name">{data?.name}</div>
+          <div className="profile-id">{data?.id}</div>
+          <div style={{marginTop:6}}><span className={`badge ${data?.role==='supervisor'?'badge-blue':'badge-green'}`}>{data?.role==='supervisor'?'👑 مشرف':'👤 موظف'}</span></div>
+        </div>
+
+        <div className="card">
+          <div className="info-row"><div className="info-key">رقم الهاتف</div><div className="info-val">{data?.phone||'—'}</div></div>
+          <div className="info-row"><div className="info-key">الرصيد</div><div className="info-val" style={{color:'var(--primary)'}}>{(data?.balance||data?.walletBalance||0).toFixed(2)} USDT</div></div>
+          <div className="info-row"><div className="info-key">نقاط المجد</div><div className="info-val" style={{color:'var(--gold)'}}>⭐ {data?.points||100}</div></div>
+          <div className="info-row"><div className="info-key">تاريخ الانضمام</div><div className="info-val">{data?.createdAt?new Date(data.createdAt).toLocaleDateString('ar'):'—'}</div></div>
+          {data?.referralCode&&<div className="info-row"><div className="info-key">كود الإحالة</div><div className="info-val" style={{color:'var(--primary)',fontFamily:'monospace',letterSpacing:1}}>{data.referralCode}</div></div>}
+        </div>
+
+        <div className="card">
+          <button className="btn btn-secondary" style={{width:'100%',marginBottom:8}} onClick={()=>setScreen(SCREENS.CHANGE_PASSWORD)}>🔑 تغيير كلمة المرور</button>
+          <button className="btn btn-secondary" style={{width:'100%',marginBottom:8}} onClick={()=>setScreen(SCREENS.TRANSACTIONS)}>📋 سجل العمليات</button>
+          <button className="btn btn-danger" style={{width:'100%'}} onClick={logout}>🚪 تسجيل الخروج</button>
+        </div>
+      </div>
+      {data?.role==='supervisor'
+        ? <SupervisorNav active={SCREENS.PROFILE} setScreen={setScreen}/>
+        : <EmployeeNav active={SCREENS.PROFILE} setScreen={setScreen}/>
+      }
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────
+// TRANSACTIONS SCREEN
+// ────────────────────────────────────────────────────
+function TransactionsScreen(){
+  const {setScreen,user}=useApp();
+  const [txs,setTxs]=useState([]);
+  const [loading,setLoading]=useState(true);
+
+  useEffect(()=>{apiGet('/api/transactions').then(setTxs).catch(()=>{}).finally(()=>setLoading(false));},[]);
+
+  const back=user?.role==='supervisor'?SCREENS.SUPERVISOR:SCREENS.EMPLOYEE;
+
+  return(
+    <div className="screen active">
+      <div className="header"><button className="header-back" onClick={()=>setScreen(back)}>←</button><div className="header-title">📋 سجل العمليات</div></div>
+      <div className="page no-nav" style={{maxWidth:480,margin:'0 auto'}}>
+        {loading?<div style={{textAlign:'center',paddingTop:40}}><div className="spinner"/></div>:
+          txs.length===0?<div style={{textAlign:'center',paddingTop:60,color:'var(--text3)'}}>لا توجد عمليات</div>:
+          txs.map(tx=><TxItem key={tx.id} tx={tx}/>)
+        }
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────
+// ADMIN DASHBOARD
+// ────────────────────────────────────────────────────
+function AdminScreen(){
+  const {setScreen}=useApp();
+  const [stats,setStats]=useState(null);
+  const [loading,setLoading]=useState(true);
+
+  useEffect(()=>{apiGet('/api/admin/stats').then(setStats).catch(()=>{}).finally(()=>setLoading(false));},[]);
+
+  return(
+    <div className="screen active">
+      <div className="header">
+        <div className="header-title">🛡️ لوحة الإدمن</div>
+        <button className="header-action" onClick={()=>{clearTokens();window.location.reload();}}>🚪</button>
+      </div>
+      <div className="page">
+        {loading?<div style={{textAlign:'center',paddingTop:40}}><div className="spinner"/></div>:(
+          <>
+            <div className="balance-card">
+              <div className="balance-label">💰 رصيد الخزينة</div>
+              <div className="balance-amount">{(stats?.adminBalance||0).toFixed(2)}</div>
+              <div className="balance-usdt">USDT</div>
+            </div>
+
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:12}}>
+              {[
+                {v:stats?.totalUsers||0,l:'الموظفون',icon:'👥'},
+                {v:stats?.totalSupervisors||0,l:'المشرفون',icon:'👑'},
+                {v:(stats?.totalDeposits||0).toFixed(0),l:'إجمالي الإيداعات',icon:'⬇️'},
+                {v:(stats?.totalWithdrawals||0).toFixed(0),l:'إجمالي السحوبات',icon:'⬆️'},
+                {v:stats?.pendingDeposits||0,l:'إيداعات معلقة',icon:'⏳',alert:true},
+                {v:stats?.pendingWithdrawals||0,l:'سحوبات معلقة',icon:'🔔',alert:true},
+              ].map((s,i)=>(
+                <div key={i} className="stat-card" style={{borderColor:s.alert&&s.v>0?'var(--primary)':'var(--border)'}}>
+                  <div style={{fontSize:24}}>{s.icon}</div>
+                  <div className="stat-value" style={{color:s.alert&&s.v>0?'var(--primary)':'var(--text)'}}>{s.v}</div>
+                  <div className="stat-label">{s.l}</div>
+                </div>
+              ))}
+            </div>
+
+            {stats?.topWithdrawers?.length>0&&(
+              <div className="card">
+                <div className="section-title">🏆 أكثر الموظفين سحباً</div>
+                {stats.topWithdrawers.slice(0,5).map((u,i)=>(
+                  <div key={u.id} className="info-row">
+                    <div className="info-key">{i+1}. {u.name}</div>
+                    <div className="info-val" style={{color:'var(--red)'}}>{(u.totalWithdrawn||0).toFixed(2)} USDT</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+              <button className="btn btn-secondary" onClick={()=>setScreen(SCREENS.ADMIN_DEPOSITS)}>⏳ إيداعات معلقة</button>
+              <button className="btn btn-secondary" onClick={()=>setScreen(SCREENS.ADMIN_WITHDRAWALS)}>🔔 سحوبات معلقة</button>
+              <button className="btn btn-secondary" onClick={()=>setScreen(SCREENS.ADMIN_SUPERVISORS)}>👑 إدارة المشرفين</button>
+              <button className="btn btn-secondary" onClick={()=>setScreen(SCREENS.ADMIN_SETTINGS)}>⚙️ الإعدادات</button>
+            </div>
+          </>
+        )}
+      </div>
+      <AdminNav active={SCREENS.ADMIN} setScreen={setScreen}/>
+    </div>
+  );
+}
+
+// ── ADMIN USERS ──
+function AdminUsersScreen(){
+  const {setScreen}=useApp();
+  const [users,setUsers]=useState([]);
+  const [search,setSearch]=useState('');
+  const [loading,setLoading]=useState(true);
+
+  useEffect(()=>{apiGet('/api/admin/users').then(setUsers).catch(()=>{}).finally(()=>setLoading(false));},[]);
+
+  const filtered=users.filter(u=>u.name?.includes(search)||u.phone?.includes(search)||u.id?.includes(search));
+
+  async function toggleBan(u){
+    try{
+      await apiPost(`/api/admin/users/ban/${u.id}`,{});
+      setUsers(prev=>prev.map(x=>x.id===u.id?{...x,banned:!x.banned}:x));
+      showToast(`تم ${u.banned?'رفع':'تطبيق'} الحظ`,'success');
+    }catch(e){showToast(e.message,'error');}
+  }
+
+  async function addBalance(u){
+    const amt=prompt('المبلغ بالـ USDT:');
+    if(!amt||isNaN(amt))return;
+    try{
+      await apiPost(`/api/admin/users/deposit/${u.id}`,{amount:parseFloat(amt)});
+      showToast(`✅ تم إضافة ${amt} USDT لـ ${u.name}`,'success');
+      setUsers(prev=>prev.map(x=>x.id===u.id?{...x,balance:(x.balance||0)+parseFloat(amt)}:x));
+    }catch(e){showToast(e.message,'error');}
+  }
+
+  return(
+    <div className="screen active">
+      <div className="header"><button className="header-back" onClick={()=>setScreen(SCREENS.ADMIN)}>←</button><div className="header-title">👥 الموظفون ({users.length})</div></div>
+      <div className="page no-nav" style={{maxWidth:480,margin:'0 auto'}}>
+        <input className="input" value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍 بحث بالاسم أو الهاتف..." style={{marginBottom:12}}/>
+        {loading?<div style={{textAlign:'center',paddingTop:40}}><div className="spinner"/></div>:
+          filtered.map(u=>(
+            <div key={u.id} className="card" style={{marginBottom:8,opacity:u.banned?.6:1}}>
+              <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
+                <div className="avatar" style={{background:'var(--bg4)'}}>{u.avatar?<img src={u.avatar} style={{width:'100%',height:'100%',borderRadius:'50%',objectFit:'cover'}}/>:'👤'}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontWeight:700}}>{u.name}</div>
+                  <div style={{fontSize:12,color:'var(--text3)'}}>{u.phone}</div>
+                  <div style={{fontSize:11,color:'var(--text3)',fontFamily:'monospace'}}>{u.id}</div>
+                </div>
+                {u.banned&&<span className="badge badge-red">محظور</span>}
+              </div>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:8,fontSize:12}}>
+                <span>💰 {(u.balance||0).toFixed(2)} USDT</span>
+                <span>⭐ {u.points||100} نقطة</span>
+                <span>📅 {new Date(u.createdAt).toLocaleDateString('ar')}</span>
+              </div>
+              <div style={{display:'flex',gap:6}}>
+                <button className="btn btn-success btn-sm" style={{flex:1}} onClick={()=>addBalance(u)}>💳 إيداع</button>
+                <button className={`btn btn-sm ${u.banned?'btn-success':'btn-danger'}`} style={{flex:1}} onClick={()=>toggleBan(u)}>{u.banned?'✅ رفع الحظ':'🚫 حظر'}</button>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <AdminNav active={SCREENS.ADMIN_USERS} setScreen={setScreen}/>
+    </div>
+  );
+}
+
+// ── ADMIN SUPERVISORS ──
+function AdminSupervisorsScreen(){
+  const {setScreen}=useApp();
+  const [sups,setSups]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [showForm,setShowForm]=useState(false);
+  const [name,setName]=useState('');
+  const [supId,setSupId]=useState('');
+  const [pass,setPass]=useState('');
+
+  useEffect(()=>{apiGet('/api/admin/supervisors').then(setSups).catch(()=>{}).finally(()=>setLoading(false));},[]);
+
+  async function createSup(e){
+    e.preventDefault();
+    try{
+      const d=await apiPost('/api/admin/supervisors',{name,supervisorId:supId,initialPassword:pass});
+      setSups(prev=>[d,...prev]);setShowForm(false);setName('');setSupId('');setPass('');
+      showToast('✅ تم إنشاء المشرف','success');
+    }catch(e){showToast(e.message,'error');}
+  }
+
+  return(
+    <div className="screen active">
+      <div className="header"><button className="header-back" onClick={()=>setScreen(SCREENS.ADMIN)}>←</button><div className="header-title">👑 المشرفون</div><button className="header-action" onClick={()=>setShowForm(!showForm)}>➕</button></div>
+      <div className="page no-nav" style={{maxWidth:480,margin:'0 auto'}}>
+        {showForm&&(
+          <form className="card" onSubmit={createSup} style={{marginBottom:16}}>
+            <div className="section-title">➕ مشرف جديد</div>
+            <div className="field"><label className="label">الاسم</label><input className="input" value={name} onChange={e=>setName(e.target.value)} required/></div>
+            <div className="field"><label className="label">المعرف (ID)</label><input className="input" value={supId} onChange={e=>setSupId(e.target.value)} placeholder="SUP_001" required/></div>
+            <div className="field"><label className="label">كلمة المرور الأولية</label><input className="input" type="password" value={pass} onChange={e=>setPass(e.target.value)} required/></div>
+            <div className="alert alert-warning" style={{fontSize:11}}>⚠️ المشرف سيُجبر على تغيير كلمة المرور عند أول دخول</div>
+            <button type="submit" className="btn btn-primary">✅ إنشاء المشرف</button>
+          </form>
+        )}
+        {loading?<div style={{textAlign:'center',paddingTop:40}}><div className="spinner"/></div>:
+          sups.map(s=>(
+            <div key={s.id} className="card" style={{marginBottom:8}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'start'}}>
+                <div><div style={{fontWeight:800,fontSize:16}}>{s.name}</div><div style={{fontSize:12,color:'var(--text3)',fontFamily:'monospace'}}>{s.supervisorId}</div></div>
+                <div style={{textAlign:'left'}}><div style={{fontSize:16,fontWeight:700,color:'var(--primary)'}}>{(s.walletBalance||0).toFixed(2)} USDT</div><div style={{fontSize:11,color:'var(--text3)'}}>محفظة المشرف</div></div>
+              </div>
+              <div style={{fontSize:12,color:'var(--text3)',marginTop:6}}>📅 {new Date(s.createdAt).toLocaleDateString('ar')} · 🔑 {s.referralCode}</div>
+            </div>
+          ))
+        }
+      </div>
+      <AdminNav active={SCREENS.ADMIN_USERS} setScreen={setScreen}/>
+    </div>
+  );
+}
+
+// ── ADMIN DEPOSITS ──
+function AdminDepositsScreen(){
+  const {setScreen,user}=useApp();
+  const [deps,setDeps]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [filter,setFilter]=useState('under_review');
+
+  useEffect(()=>{apiGet('/api/deposit/list').then(setDeps).catch(()=>{}).finally(()=>setLoading(false));},[]);
+
+  async function confirm(d){
+    try{
+      await apiPost(`/api/deposit/confirm/${d.id}`,{});
+      setDeps(prev=>prev.map(x=>x.id===d.id?{...x,status:'confirmed'}:x));
+      showToast('✅ تم تأكيد الإيداع','success');
+    }catch(e){showToast(e.message,'error');}
+  }
+
+  async function reject(d){
+    try{
+      await apiPost(`/api/deposit/reject/${d.id}`,{});
+      setDeps(prev=>prev.map(x=>x.id===d.id?{...x,status:'failed'}:x));
+      showToast('تم رفض الإيداع','info');
+    }catch(e){showToast(e.message,'error');}
+  }
+
+  const filtered=deps.filter(d=>filter==='all'||d.status===filter);
+  const statusColor={pending:'var(--text3)',under_review:'var(--gold)',confirmed:'var(--green)',failed:'var(--red)'};
+  const statusLabel={pending:'معلق',under_review:'قيد المراجعة',confirmed:'مؤكد',failed:'فاشل'};
+  const nav=user?.role==='admin'?AdminNav:SupervisorNav;
+  const activeNav=user?.role==='admin'?SCREENS.ADMIN_DEPOSITS:SCREENS.ADMIN_DEPOSITS;
+
+  return(
+    <div className="screen active">
+      <div className="header"><button className="header-back" onClick={()=>setScreen(user?.role==='admin'?SCREENS.ADMIN:SCREENS.SUPERVISOR)}>←</button><div className="header-title">⬇️ الإيداعات</div></div>
+      <div className="page no-nav" style={{maxWidth:480,margin:'0 auto'}}>
+        <div className="tabs">
+          {['under_review','pending','confirmed','failed','all'].map(s=>(
+            <button key={s} className={`tab${filter===s?' active':''}`} onClick={()=>setFilter(s)} style={{fontSize:10}}>
+              {s==='under_review'?'معلقة':s==='pending'?'انتظار':s==='confirmed'?'مؤكدة':s==='failed'?'فاشلة':'الكل'}
+            </button>
+          ))}
+        </div>
+        {loading?<div style={{textAlign:'center',paddingTop:40}}><div className="spinner"/></div>:
+          filtered.length===0?<div style={{textAlign:'center',paddingTop:40,color:'var(--text3)'}}>لا توجد إيداعات</div>:
+          filtered.map(d=>(
+            <div key={d.id} className="card" style={{marginBottom:8}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'start',marginBottom:8}}>
+                <div><div style={{fontWeight:700,fontSize:18,color:'var(--primary)'}}>{d.amount} USDT</div><div style={{fontSize:12,color:'var(--text3)'}}>{d.network} · {new Date(d.created_at).toLocaleString('ar')}</div></div>
+                <span className="badge" style={{background:`${statusColor[d.status]}22`,color:statusColor[d.status]}}>{statusLabel[d.status]||d.status}</span>
+              </div>
+              {d.txid&&<div style={{fontSize:11,color:'var(--text3)',marginBottom:8,fontFamily:'monospace',wordBreak:'break-all'}}>TXID: {d.txid}</div>}
+              {d.screenshot_url&&<div style={{marginBottom:8}}><a href={d.screenshot_url} target="_blank" style={{fontSize:12,color:'var(--blue)'}}>📷 عرض الإيصال</a></div>}
+              {d.status==='under_review'&&(
+                <div style={{display:'flex',gap:8}}>
+                  <button className="btn btn-success btn-sm" style={{flex:1}} onClick={()=>confirm(d)}>✅ تأكيد</button>
+                  <button className="btn btn-danger btn-sm" style={{flex:1}} onClick={()=>reject(d)}>❌ رفض</button>
+                </div>
+              )}
+            </div>
+          ))
+        }
+      </div>
+      {user?.role==='admin'?<AdminNav active={SCREENS.ADMIN_DEPOSITS} setScreen={setScreen}/>:<SupervisorNav active={SCREENS.ADMIN_DEPOSITS} setScreen={setScreen}/>}
+    </div>
+  );
+}
+
+// ── ADMIN WITHDRAWALS ──
+function AdminWithdrawalsScreen(){
+  const {setScreen,user}=useApp();
+  const [wdrs,setWdrs]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [filter,setFilter]=useState('pending');
+
+  useEffect(()=>{apiGet('/api/withdraw/list').then(setWdrs).catch(()=>{}).finally(()=>setLoading(false));},[]);
+
+  async function approve(w){
+    try{await apiPost(`/api/withdraw/approve/${w.id}`,{});setWdrs(prev=>prev.map(x=>x.id===w.id?{...x,status:'approved'}:x));showToast('✅ تمت الموافقة','success');}catch(e){showToast(e.message,'error');}
+  }
+  async function reject(w){
+    try{await apiPost(`/api/withdraw/reject/${w.id}`,{});setWdrs(prev=>prev.map(x=>x.id===w.id?{...x,status:'rejected'}:x));showToast('تم الرفض','info');}catch(e){showToast(e.message,'error');}
+  }
+
+  const filtered=wdrs.filter(w=>filter==='all'||w.status===filter);
+
+  return(
+    <div className="screen active">
+      <div className="header"><button className="header-back" onClick={()=>setScreen(user?.role==='admin'?SCREENS.ADMIN:SCREENS.SUPERVISOR)}>←</button><div className="header-title">⬆️ السحوبات</div></div>
+      <div className="page no-nav" style={{maxWidth:480,margin:'0 auto'}}>
+        <div className="tabs">
+          {['pending','approved','rejected','all'].map(s=>(
+            <button key={s} className={`tab${filter===s?' active':''}`} onClick={()=>setFilter(s)} style={{fontSize:11}}>
+              {s==='pending'?'معلقة':s==='approved'?'مُعتمدة':s==='rejected'?'مرفوضة':'الكل'}
+            </button>
+          ))}
+        </div>
+        {loading?<div style={{textAlign:'center',paddingTop:40}}><div className="spinner"/></div>:
+          filtered.length===0?<div style={{textAlign:'center',paddingTop:40,color:'var(--text3)'}}>لا توجد سحوبات</div>:
+          filtered.map(w=>(
+            <div key={w.id} className="card" style={{marginBottom:8}}>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}>
+                <div><div style={{fontWeight:700,fontSize:18,color:'var(--red)'}}>{w.amount} USDT</div><div style={{fontSize:12,color:'var(--text3)'}}>{w.network} · {new Date(w.createdAt).toLocaleString('ar')}</div></div>
+                <span className="badge" style={{background:w.status==='pending'?'rgba(245,158,11,.15)':w.status==='approved'?'rgba(16,185,129,.15)':'rgba(239,68,68,.15)',color:w.status==='pending'?'var(--gold)':w.status==='approved'?'var(--green)':'var(--red)'}}>
+                  {w.status==='pending'?'معلق':w.status==='approved'?'مُعتمد':'مرفوض'}
+                </span>
+              </div>
+              <div style={{fontSize:11,color:'var(--text3)',marginBottom:4,wordBreak:'break-all'}}>📍 {w.walletAddress}</div>
+              <div style={{fontSize:12,marginBottom:8}}>صافي: <strong style={{color:'var(--green)'}}>{(w.netAmount||0).toFixed(2)} USDT</strong> (رسوم {w.fee}%)</div>
+              {w.status==='pending'&&(
+                <div style={{display:'flex',gap:8}}>
+                  <button className="btn btn-success btn-sm" style={{flex:1}} onClick={()=>approve(w)}>✅ موافقة</button>
+                  <button className="btn btn-danger btn-sm" style={{flex:1}} onClick={()=>reject(w)}>❌ رفض + استرداد</button>
+                </div>
+              )}
+            </div>
+          ))
+        }
+      </div>
+      {user?.role==='admin'?<AdminNav active={SCREENS.ADMIN_WITHDRAWALS} setScreen={setScreen}/>:<SupervisorNav active={SCREENS.ADMIN_WITHDRAWALS} setScreen={setScreen}/>}
+    </div>
+  );
+}
+
+// ── ADMIN SETTINGS ──
+function AdminSettingsScreen(){
+  const {setScreen}=useApp();
+  const [sys,setSys]=useState(null);
+  const [loading,setLoading]=useState(true);
+  const [saving,setSaving]=useState(false);
+
+  useEffect(()=>{apiGet('/api/admin/system').then(setSys).catch(()=>{}).finally(()=>setLoading(false));},[]);
+
+  async function save(){
+    setSaving(true);
+    try{await apiPut('/api/admin/system',sys);showToast('✅ تم حفظ الإعدادات','success');}catch(e){showToast(e.message,'error');}
+    setSaving(false);
+  }
+
+  return(
+    <div className="screen active">
+      <div className="header"><button className="header-back" onClick={()=>setScreen(SCREENS.ADMIN)}>←</button><div className="header-title">⚙️ إعدادات المنصة</div></div>
+      <div className="page no-nav" style={{maxWidth:480,margin:'0 auto'}}>
+        {loading||!sys?<div style={{textAlign:'center',paddingTop:40}}><div className="spinner"/></div>:(
+          <>
+            <div className="card">
+              <div className="section-title">🔐 التحكم العام</div>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 0',borderBottom:'1px solid var(--border)'}}>
+                <div><div style={{fontWeight:700}}>تجميد السحوبات</div><div style={{fontSize:12,color:'var(--text3)'}}>إيقاف جميع طلبات السحب</div></div>
+                <label style={{position:'relative',display:'inline-block',width:48,height:26}}>
+                  <input type="checkbox" checked={sys.withdrawalsFrozen||false} onChange={e=>setSys({...sys,withdrawalsFrozen:e.target.checked})} style={{opacity:0,width:0,height:0}}/>
+                  <span onClick={()=>setSys(s=>({...s,withdrawalsFrozen:!s.withdrawalsFrozen}))} style={{position:'absolute',cursor:'pointer',inset:0,background:sys.withdrawalsFrozen?'var(--red)':'var(--bg4)',borderRadius:26,transition:'.3s',border:'1px solid var(--border)'}}>
+                    <span style={{position:'absolute',height:20,width:20,right:sys.withdrawalsFrozen?3:undefined,left:sys.withdrawalsFrozen?undefined:3,bottom:2,background:'#fff',borderRadius:'50%',transition:'.3s'}}/>
+                  </span>
+                </label>
+              </div>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 0'}}>
+                <div><div style={{fontWeight:700}}>وضع الصيانة</div><div style={{fontSize:12,color:'var(--text3)'}}>إيقاف المنصة مؤقتاً</div></div>
+                <label style={{position:'relative',display:'inline-block',width:48,height:26}}>
+                  <span onClick={()=>setSys(s=>({...s,maintenance:!s.maintenance}))} style={{position:'absolute',cursor:'pointer',inset:0,background:sys.maintenance?'var(--gold)':'var(--bg4)',borderRadius:26,transition:'.3s',border:'1px solid var(--border)'}}>
+                    <span style={{position:'absolute',height:20,width:20,right:sys.maintenance?3:undefined,left:sys.maintenance?undefined:3,bottom:2,background:'#fff',borderRadius:'50%',transition:'.3s'}}/>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="section-title">💰 عناوين محافظ الإيداع</div>
+              <div className="field"><label className="label">TRC20 (TRON)</label><input className="input" value={sys.usdtAddressTRC20||''} onChange={e=>setSys({...sys,usdtAddressTRC20:e.target.value})} placeholder="عنوان TRC20"/></div>
+              <div className="field"><label className="label">BEP20 (BSC)</label><input className="input" value={sys.usdtAddressBEP20||''} onChange={e=>setSys({...sys,usdtAddressBEP20:e.target.value})} placeholder="عنوان BEP20"/></div>
+              <div className="field"><label className="label">ERC20 (Ethereum)</label><input className="input" value={sys.usdtAddressERC20||''} onChange={e=>setSys({...sys,usdtAddressERC20:e.target.value})} placeholder="عنوان ERC20"/></div>
+            </div>
+
+            <div className="card">
+              <div className="section-title">📊 الحدود المالية</div>
+              <div className="field"><label className="label">الحد الأدنى للسحب (USDT)</label><input className="input" type="number" value={sys.minWithdraw||20} onChange={e=>setSys({...sys,minWithdraw:parseFloat(e.target.value)})}/></div>
+            </div>
+
+            <button className="btn btn-primary" onClick={save} disabled={saving}>{saving?'جاري الحفظ...':'💾 حفظ الإعدادات'}</button>
+          </>
+        )}
+      </div>
+      <AdminNav active={SCREENS.ADMIN_SETTINGS} setScreen={setScreen}/>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────
+// SUPERVISOR DASHBOARD
+// ────────────────────────────────────────────────────
+function SupervisorScreen(){
+  const {setScreen,user}=useApp();
+  const [stats,setStats]=useState(null);
+  const [loading,setLoading]=useState(true);
+
+  useEffect(()=>{
+    Promise.all([apiGet('/api/supervisor/stats'),apiGet('/api/user/me')]).then(([s,u])=>{setStats(s);}).catch(()=>{}).finally(()=>setLoading(false));
+  },[]);
+
+  return(
+    <div className="screen active">
+      <div className="header">
+        <div className="header-title">👑 لوحة المشرف</div>
+        <button className="header-action" onClick={()=>{clearTokens();window.location.reload();}}>🚪</button>
+      </div>
+      <div className="page">
+        {loading?<div style={{textAlign:'center',paddingTop:40}}><div className="spinner"/></div>:(
+          <>
+            <div className="balance-card">
+              <div className="balance-label">💰 محفظة المشرف</div>
+              <div className="balance-amount">{(stats?.walletBalance||0).toFixed(2)}</div>
+              <div className="balance-usdt">USDT</div>
+              <div style={{marginTop:12}}>
+                <button className="btn btn-primary" style={{padding:'10px',fontSize:13}} onClick={()=>setScreen(SCREENS.WITHDRAW)}>⬆️ سحب من المحفظة</button>
+              </div>
+            </div>
+
+            <div className="stats-row">
+              <div className="stat-card"><div className="stat-value">{stats?.totalEmployees||0}</div><div className="stat-label">إجمالي الفريق</div></div>
+              <div className="stat-card"><div style={{fontSize:20,fontWeight:800,color:'var(--green)'}}>{stats?.newToday||0}</div><div className="stat-label">جدد اليوم</div></div>
+            </div>
+
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+              <button className="btn btn-secondary" onClick={()=>setScreen(SCREENS.SUP_EMPLOYEES)}>👥 إدارة الفريق</button>
+              <button className="btn btn-secondary" onClick={()=>setScreen(SCREENS.ADMIN_DEPOSITS)}>⬇️ الإيداعات</button>
+              <button className="btn btn-secondary" onClick={()=>setScreen(SCREENS.ADMIN_WITHDRAWALS)}>⬆️ السحوبات</button>
+              <button className="btn btn-secondary" onClick={()=>setScreen(SCREENS.TRANSACTIONS)}>📋 العمليات</button>
+            </div>
+          </>
+        )}
+      </div>
+      <SupervisorNav active={SCREENS.SUPERVISOR} setScreen={setScreen}/>
+    </div>
+  );
+}
+
+// ── SUP EMPLOYEES ──
+function SupervisorEmployeesScreen(){
+  const {setScreen}=useApp();
+  const [emps,setEmps]=useState([]);
+  const [loading,setLoading]=useState(true);
+  const [tab,setTab]=useState('all');
+
+  useEffect(()=>{
+    Promise.all([apiGet('/api/supervisor/employees'),apiGet('/api/supervisor/top-withdrawers')]).then(([e,t])=>{
+      setEmps(tab==='top'?t:e);
+    }).catch(()=>{}).finally(()=>setLoading(false));
+  },[]);
+
+  useEffect(()=>{
+    setLoading(true);
+    const ep=tab==='top'?'/api/supervisor/top-withdrawers':'/api/supervisor/employees';
+    apiGet(ep).then(setEmps).catch(()=>{}).finally(()=>setLoading(false));
+  },[tab]);
+
+  async function deductPoints(u){
+    const pts=prompt(`خصم نقاط من ${u.name} (الحالي: ${u.points||100}):`);
+    if(!pts||isNaN(pts))return;
+    const reason=prompt('سبب الخصم:')||'خصم يدوي من المشرف';
+    try{
+      await apiPost('/api/points/deduct',{userId:u.id,points:parseInt(pts),reason});
+      showToast(`✅ تم خصم ${pts} نقطة من ${u.name}`,'success');
+      setEmps(prev=>prev.map(x=>x.id===u.id?{...x,points:Math.max(0,(x.points||100)-parseInt(pts))}:x));
+    }catch(e){showToast(e.message,'error');}
+  }
+
+  return(
+    <div className="screen active">
+      <div className="header"><button className="header-back" onClick={()=>setScreen(SCREENS.SUPERVISOR)}>←</button><div className="header-title">👥 الفريق ({emps.length})</div></div>
+      <div className="page no-nav" style={{maxWidth:480,margin:'0 auto'}}>
+        <div className="tabs">
+          {['all','top'].map(t=><button key={t} className={`tab${tab===t?' active':''}`} onClick={()=>setTab(t)}>{t==='all'?'الكل':'🏆 الأكثر سحباً'}</button>)}
+        </div>
+        {loading?<div style={{textAlign:'center',paddingTop:40}}><div className="spinner"/></div>:
+          emps.map(u=>(
+            <div key={u.id} className="list-item" style={{flexWrap:'wrap',gap:8}}>
+              <div className="avatar">{u.avatar?<img src={u.avatar} style={{width:'100%',height:'100%',borderRadius:'50%',objectFit:'cover'}}/>:'👤'}</div>
+              <div className="list-content">
+                <div className="list-title">{u.name}</div>
+                <div className="list-sub">💰 {(u.balance||0).toFixed(2)} USDT · ⭐ {u.points||100} نقطة</div>
+                {tab==='top'&&<div style={{fontSize:11,color:'var(--red)'}}>⬆️ مُسحوب: {(u.totalWithdrawn||0).toFixed(2)} USDT</div>}
+              </div>
+              <button className="btn btn-secondary btn-sm" onClick={()=>deductPoints(u)}>⚠️ خصم نقاط</button>
+            </div>
+          ))
+        }
+      </div>
+      <SupervisorNav active={SCREENS.SUP_EMPLOYEES} setScreen={setScreen}/>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────
+// ROOT APP
+// ────────────────────────────────────────────────────
+function App(){
+  const [screen,setScreen]=useState(SCREENS.LOGIN);
+  const [user,setUser]=useState(null);
+
+  useEffect(()=>{
+    if(_accessToken){
+      apiGet('/api/user/me').then(u=>{
+        setUser(u);
+        if(u.role==='admin')setScreen(SCREENS.ADMIN);
+        else if(u.role==='supervisor'){
+          if(u.mustChangePassword)setScreen(SCREENS.CHANGE_PASSWORD);
+          else setScreen(SCREENS.SUPERVISOR);
+        }else setScreen(SCREENS.EMPLOYEE);
+      }).catch(()=>{clearTokens();setScreen(SCREENS.LOGIN);});
+    }
+  },[]);
+
+  const ctx={screen,setScreen,user,setUser};
+
+  return(
+    <AppCtx.Provider value={ctx}>
+      {screen===SCREENS.LOGIN&&<LoginScreen/>}
+      {screen==='register'&&<RegisterScreen/>}
+      {screen===SCREENS.CHANGE_PASSWORD&&<ChangePasswordScreen/>}
+      {screen===SCREENS.EMPLOYEE&&<EmployeeScreen/>}
+      {screen===SCREENS.WALLET&&<WalletScreen/>}
+      {screen===SCREENS.DEPOSIT_NETWORK&&<DepositNetworkScreen/>}
+      {screen===SCREENS.DEPOSIT_AMOUNT&&<DepositAmountScreen/>}
+      {screen===SCREENS.DEPOSIT_ADDRESS&&<DepositAddressScreen/>}
+      {screen===SCREENS.DEPOSIT_PENDING&&<DepositPendingScreen/>}
+      {screen===SCREENS.DEPOSIT_SUCCESS&&<DepositSuccessScreen/>}
+      {screen===SCREENS.WITHDRAW&&<WithdrawScreen/>}
+      {screen===SCREENS.PACKAGES&&<PackagesScreen/>}
+      {screen===SCREENS.LUCKY&&<LuckyWheelScreen/>}
+      {screen===SCREENS.PROFILE&&<ProfileScreen/>}
+      {screen===SCREENS.TRANSACTIONS&&<TransactionsScreen/>}
+      {screen===SCREENS.ADMIN&&<AdminScreen/>}
+      {screen===SCREENS.ADMIN_USERS&&<AdminUsersScreen/>}
+      {screen===SCREENS.ADMIN_SUPERVISORS&&<AdminSupervisorsScreen/>}
+      {screen===SCREENS.ADMIN_DEPOSITS&&<AdminDepositsScreen/>}
+      {screen===SCREENS.ADMIN_WITHDRAWALS&&<AdminWithdrawalsScreen/>}
+      {screen===SCREENS.ADMIN_SETTINGS&&<AdminSettingsScreen/>}
+      {screen===SCREENS.SUPERVISOR&&<SupervisorScreen/>}
+      {screen===SCREENS.SUP_EMPLOYEES&&<SupervisorEmployeesScreen/>}
+    </AppCtx.Provider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{});}
+</script>
+</body>
+</html>

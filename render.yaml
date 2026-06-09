@@ -1,0 +1,17 @@
+# Render service definition (optional) — use with Render's Infrastructure as Code
+services:
+  - type: web
+    name: aura-france
+    env: node
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: "3000"
+      # Do NOT commit secrets here. Set these in Render's dashboard:
+      # - key: JWT_SECRET
+      #   value: <set-in-render>
+      # - key: JWT_REFRESH_SECRET
+      #   value: <set-in-render>
